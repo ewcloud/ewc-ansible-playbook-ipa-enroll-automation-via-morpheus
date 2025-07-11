@@ -1,0 +1,1 @@
+vars/main.yml yaml[line-length] # disable the line-length check for in user's input spec file
