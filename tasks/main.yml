@@ -129,10 +129,133 @@
   ansible.builtin.set_fact:
     morpheus_integration_id: "{{ create_morpheus_integration_result.json.integration.id if morpheus_integration_id == '' else update_morpheus_integration_result.json.integration.id }}"
 
+- name: Check for existing Morpheus Tasks
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/tasks?max=9999"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    validate_certs: false
+  register: morpheus_task_check
+
+- name: Set Morpheus Task ID if exists (to be ran during provision)
+  ansible.builtin.set_fact:
+    morpheus_task_id_provision: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', 'ipa-client-enroll') | first).id | default(None) }}"
+
+- name: Create new Morpheus Task (to be ran during provision)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/tasks"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      task:
+        name: "ipa-client-enroll"
+        visibility: "private"
+        taskType:
+          code: "ansibleTask"
+        executeTarget: "resource"
+        taskOptions:
+          ansibleGitId: "{{ morpheus_integration_id }}"
+          ansiblePlaybook: "ipa-client-enroll-flavour"
+          ansibleGitRef: null
+    validate_certs: false
+  register: create_morpheus_task_result_provision
+  when: morpheus_task_id_provision == ''
+  changed_when: true
+
+- name: Update existing Morpheus Task (to be ran during provision)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/tasks/{{ morpheus_task_id_provision }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      task:
+        name: "ipa-client-enroll"
+        visibility: "private"
+        taskType:
+          code: "ansibleTask"
+        executeTarget: "resource"
+        taskOptions:
+          ansibleGitId: "{{ morpheus_integration_id }}"
+          ansiblePlaybook: "ipa-client-enroll-flavour"
+          ansibleGitRef: null
+    validate_certs: false
+  register: update_morpheus_task_result_provision
+  when: morpheus_task_id_provision != ''
+  changed_when: true
+
+- name: Get ID of Morpheus Task (to be ran during provision)
+  ansible.builtin.set_fact:
+    morpheus_task_id_provision: "{{ create_morpheus_task_result_provision.json.task.id if morpheus_task_id_provision == '' else update_morpheus_task_result_provision.json.task.id }}"
+
+- name: Set Morpheus Task ID if exists (to be ran during teardown)
+  ansible.builtin.set_fact:
+    morpheus_task_id_teardown: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', 'ipa-client-disenroll') | first).id | default(None) }}"
+
+- name: Create new Morpheus Task (to be ran during teardown)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/tasks"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      task:
+        name: "ipa-client-disenroll"
+        visibility: "private"
+        taskType:
+          code: "ansibleTask"
+        executeTarget: "resource"
+        taskOptions:
+          ansibleGitId: "{{ morpheus_integration_id }}"
+          ansiblePlaybook: ipa-client-disenroll-flavour
+          ansibleGitRef: null
+    validate_certs: false
+  register: create_morpheus_task_result_teardown
+  when: morpheus_task_id_teardown == ''
+  changed_when: true
+
+- name: Update existing Morpheus Task (to be ran during teardown)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/tasks/{{ morpheus_task_id_teardown }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      task:
+        name: "ipa-client-disenroll"
+        visibility: "private"
+        taskType:
+          code: "ansibleTask"
+        executeTarget: "resource"
+        taskOptions:
+          ansibleGitId: "{{ morpheus_integration_id }}"
+          ansiblePlaybook: "ipa-client-disenroll-flavour"
+          ansibleGitRef: null
+    validate_certs: false
+  register: update_morpheus_task_result_teardown
+  when: morpheus_task_id_teardown != ''
+  changed_when: true
+
+- name: Get ID of Morpheus Task (to be ran during teardown)
+  ansible.builtin.set_fact:
+    morpheus_task_id_teardown: "{{ create_morpheus_task_result_teardown.json.task.id if morpheus_task_id_teardown == '' else update_morpheus_task_result_teardown.json.task.id }}"
+
 - name: List created and/or updated Morpheus entities
   ansible.builtin.debug:
     msg:
       - "Morpheus Tenant: {'name': '{{ morpheus_tenant_name }}',  'id': '{{ morpheus_tenant_id }}'}"
       - "Morpheus Git Integration: {'name': 'ewc-flavours', 'id':'{{ morpheus_integration_id }}'}"
+      - "Morpheus Tasks: [{'name': 'ipa-client-enroll', 'id': '{{ morpheus_task_id_provision }}'}, {'name': 'ipa-client-disenroll', 'id': '{{ morpheus_task_id_teardown }}'}]"
       - "{{ 'Morpheus Cypher Secrets:                                                                               ' if update_morpheus_cypher == 'yes' else None }}"
       - "{{ (store_morpheus_cypher_result.results | map(attribute='json') | flatten | map(attribute='cypher') | list) if update_morpheus_cypher == 'yes' else None }}"
