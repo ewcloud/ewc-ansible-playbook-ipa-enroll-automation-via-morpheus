@@ -1,0 +1,33 @@
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - morpheus_token is string and morpheus_token != '' and morpheus_token is defined
+      - morpheus_url is string and morpheus_url != '' and morpheus_url is defined
+      - morpheus_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
+      - morpheus_tenant_name is string and morpheus_tenant_name != '' and morpheus_tenant_name is defined
+    fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
+    success_msg: "User input configuration is valid."
+
+- name: Gather facts about the Morpheus Tenant
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/whoami"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    validate_certs: false
+  register: tenant_check
+
+- name: Verify Morpheus Tenant exists
+  ansible.builtin.set_fact:
+    morpheus_tenant_id: "{{ tenant_check.json.user.account.id }}"
+  when: tenant_check.json.user.account.name == morpheus_tenant_name
+  failed_when: tenant_check.json.user.account.name != morpheus_tenant_name
+  vars:
+    error_msg: "Tenant '{{ morpheus_tenant_name }}' does not exist of wrong access token was passed."
+
+- name: List created and/or updated Morpheus entities
+  ansible.builtin.debug:
+    msg:
+      - "Morpheus Tenant: {'name': '{{ morpheus_tenant_name }}',  'id': '{{ morpheus_tenant_id }}'}"
