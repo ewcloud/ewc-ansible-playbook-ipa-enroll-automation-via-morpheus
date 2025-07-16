@@ -6,8 +6,20 @@
       - morpheus_url is string and morpheus_url != '' and morpheus_url is defined
       - morpheus_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
       - morpheus_tenant_name is string and morpheus_tenant_name != '' and morpheus_tenant_name is defined
+      - update_morpheus_cypher in [ "yes", "no"]
+      - morpheus_cypher_ipa_domain_name is string and morpheus_cypher_ipa_domain_name is defined and morpheus_cypher_ipa_domain_name!= ''
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
+
+- name: Validate optional variables
+  ansible.builtin.assert:
+    that:
+      - morpheus_cypher_ipa_server_hostname is string and morpheus_cypher_ipa_server_hostname is defined and morpheus_cypher_ipa_server_hostname != ''
+      - morpheus_cypher_ipa_admin_username is string and morpheus_cypher_ipa_admin_username is defined and morpheus_cypher_ipa_admin_username != ''
+      - morpheus_cypher_ipa_admin_password is string and morpheus_cypher_ipa_admin_password is defined and morpheus_cypher_ipa_admin_password != ''
+    fail_msg: "Input validation failed. See README.md for information on optional inputs and their format."
+    success_msg: "User optional input configuration is valid."
+  when: update_morpheus_cypher == "yes"
 
 - name: Gather facts about the Morpheus Tenant
   ansible.builtin.uri:
@@ -27,7 +39,29 @@
   vars:
     error_msg: "Tenant '{{ morpheus_tenant_name }}' does not exist of wrong access token was passed."
 
+- name: Store secrets in Morpheus Cypher (no expire date)
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/cypher/secret/{{ item.key }}?type=string&ttl=0"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      value: "{{ item.value }}"
+    validate_certs: false
+  loop:
+    - { key: "ipa_domain_name", value: "{{ morpheus_cypher_ipa_domain_name }}" }
+    - { key: "ipa_server_hostname", value: "{{ morpheus_cypher_ipa_server_hostname }}" }
+    - { key: "ipa_admin_username", value: "{{ morpheus_cypher_ipa_admin_username }}" }
+    - { key: "ipa_admin_password", value: "{{ morpheus_cypher_ipa_admin_password }}" }
+  register: store_morpheus_cypher_result
+  when: update_morpheus_cypher == "yes"
+  changed_when: true
+
 - name: List created and/or updated Morpheus entities
   ansible.builtin.debug:
     msg:
       - "Morpheus Tenant: {'name': '{{ morpheus_tenant_name }}',  'id': '{{ morpheus_tenant_id }}'}"
+      - "{{ 'Morpheus Cypher Secrets:                                                                               ' if update_morpheus_cypher == 'yes' else None }}"
+      - "{{ (store_morpheus_cypher_result.results | map(attribute='json') | flatten | map(attribute='cypher') | list) if update_morpheus_cypher == 'yes' else None }}"

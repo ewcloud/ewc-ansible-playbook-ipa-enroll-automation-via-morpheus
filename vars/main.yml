@@ -1,3 +1,8 @@
 morpheus_token: null
 morpheus_url: null
 morpheus_tenant_name: null
+update_morpheus_cypher: null
+morpheus_cypher_ipa_domain_name: null
+morpheus_cypher_ipa_server_hostname: null
+morpheus_cypher_ipa_admin_username: null
+morpheus_cypher_ipa_admin_password: null
