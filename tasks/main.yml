@@ -251,11 +251,74 @@
   ansible.builtin.set_fact:
     morpheus_task_id_teardown: "{{ create_morpheus_task_result_teardown.json.task.id if morpheus_task_id_teardown == '' else update_morpheus_task_result_teardown.json.task.id }}"
 
+- name: Check for existing Morpheus Workflow
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/task-sets?max=9999"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    validate_certs: false
+  register: morpheus_workflow_check
+
+- name: Set Morpheus Workflow ID if exists
+  ansible.builtin.set_fact:
+    morpheus_workflow_id: "{{ (morpheus_workflow_check.json.taskSets | selectattr('name', 'equalto', 'ipa-enroll-automation') | first).id | default(None) }}"
+
+- name: Create new Morpheus Workflow
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/task-sets"
+    method: POST
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      taskSet:
+        name: "ipa-enroll-automation"
+        visibility: "private"
+        type: "provision"
+        tasks:
+          - taskId: "{{ morpheus_task_id_provision }}"
+            taskPhase: "provision"
+          - taskId: "{{ morpheus_task_id_teardown }}"
+            taskPhase: "teardown"
+    validate_certs: false
+  register: create_morpheus_workflow_result
+  changed_when: true
+  when: morpheus_workflow_id == ''
+
+- name: Update existing Morpheus Workflow
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/task-sets/{{ morpheus_workflow_id }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      taskSet:
+        name: "ipa-enroll-automation"
+        visibility: "private"
+        type: "provision"
+        tasks:
+          - taskId: "{{ morpheus_task_id_provision }}"
+            taskPhase: "provision"
+    validate_certs: false
+  register: update_morpheus_workflow_result
+  changed_when: true
+  when: morpheus_workflow_id != ''
+
+- name: Get ID of Morpheus Workflow
+  ansible.builtin.set_fact:
+    morpheus_workflow_id: "{{ create_morpheus_workflow_result.json.taskSet.id if morpheus_workflow_id == '' else update_morpheus_workflow_result.json.taskSet.id }}"
+
 - name: List created and/or updated Morpheus entities
   ansible.builtin.debug:
     msg:
       - "Morpheus Tenant: {'name': '{{ morpheus_tenant_name }}',  'id': '{{ morpheus_tenant_id }}'}"
       - "Morpheus Git Integration: {'name': 'ewc-flavours', 'id':'{{ morpheus_integration_id }}'}"
       - "Morpheus Tasks: [{'name': 'ipa-client-enroll', 'id': '{{ morpheus_task_id_provision }}'}, {'name': 'ipa-client-disenroll', 'id': '{{ morpheus_task_id_teardown }}'}]"
+      - "Morpheus Workflow: {'name': 'ipa-enroll-automation' 'id': '{{ morpheus_workflow_id }}'}"
       - "{{ 'Morpheus Cypher Secrets:                                                                               ' if update_morpheus_cypher == 'yes' else None }}"
       - "{{ (store_morpheus_cypher_result.results | map(attribute='json') | flatten | map(attribute='cypher') | list) if update_morpheus_cypher == 'yes' else None }}"
