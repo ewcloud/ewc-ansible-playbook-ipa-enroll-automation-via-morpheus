@@ -370,6 +370,21 @@
   ansible.builtin.set_fact:
     morpheus_domain_id: "{{ create_morpheus_domain_result.json.networkDomain.id if morpheus_domain_id == '' else update_morpheus_domain_result.json.networkDomain.id }}"
 
+- name: Link Morpheus Workflow to Morpheus Domain
+  ansible.builtin.uri:
+    url: "{{ morpheus_url }}/api/networks/domains/{{ morpheus_domain_id }}"
+    method: PUT
+    headers:
+      Authorization: "Bearer {{ morpheus_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      networkDomain:
+        taskSetId: "{{ morpheus_workflow_id }}"
+    validate_certs: false
+  register: update_morpheus_domain_result
+  changed_when: true
+
 - name: List created and/or updated Morpheus entities
   ansible.builtin.debug:
     msg:
