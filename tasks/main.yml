@@ -30,6 +30,7 @@
       Content-Type: "application/json"
     validate_certs: false
   register: tenant_check
+  no_log: true
 
 - name: Verify Morpheus Tenant exists
   ansible.builtin.set_fact:
@@ -58,6 +59,7 @@
   register: store_morpheus_cypher_result
   when: update_morpheus_cypher == "yes"
   changed_when: true
+  no_log: true
 
 - name: Check for existing Morpheus Integration with user-defined git repository
   ansible.builtin.uri:
@@ -68,6 +70,7 @@
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_integration_check
+  no_log: true
 
 - name: Set Morpheus Integration ID if exists
   ansible.builtin.set_fact:
@@ -98,6 +101,7 @@
   register: create_morpheus_integration_result
   when: morpheus_integration_id == ''
   changed_when: true
+  no_log: true
 
 - name: Update existing Morpheus Integration for ewc-flavours GitHub repository
   ansible.builtin.uri:
@@ -124,6 +128,7 @@
   register: update_morpheus_integration_result
   when: morpheus_integration_id != ''
   changed_when: true
+  no_log: true
 
 - name: Get ID of Morpheus Integration
   ansible.builtin.set_fact:
@@ -138,6 +143,7 @@
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_task_check
+  no_log: true
 
 - name: Set Morpheus Task ID if exists (to be ran during provision)
   ansible.builtin.set_fact:
@@ -166,6 +172,7 @@
   register: create_morpheus_task_result_provision
   when: morpheus_task_id_provision == ''
   changed_when: true
+  no_log: true
 
 - name: Update existing Morpheus Task (to be ran during provision)
   ansible.builtin.uri:
@@ -190,6 +197,7 @@
   register: update_morpheus_task_result_provision
   when: morpheus_task_id_provision != ''
   changed_when: true
+  no_log: true
 
 - name: Get ID of Morpheus Task (to be ran during provision)
   ansible.builtin.set_fact:
@@ -222,6 +230,7 @@
   register: create_morpheus_task_result_teardown
   when: morpheus_task_id_teardown == ''
   changed_when: true
+  no_log: true
 
 - name: Update existing Morpheus Task (to be ran during teardown)
   ansible.builtin.uri:
@@ -246,6 +255,7 @@
   register: update_morpheus_task_result_teardown
   when: morpheus_task_id_teardown != ''
   changed_when: true
+  no_log: true
 
 - name: Get ID of Morpheus Task (to be ran during teardown)
   ansible.builtin.set_fact:
@@ -260,6 +270,7 @@
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_workflow_check
+  no_log: true
 
 - name: Set Morpheus Workflow ID if exists
   ansible.builtin.set_fact:
@@ -287,6 +298,7 @@
   register: create_morpheus_workflow_result
   changed_when: true
   when: morpheus_workflow_id == ''
+  no_log: true
 
 - name: Update existing Morpheus Workflow
   ansible.builtin.uri:
@@ -308,6 +320,7 @@
   register: update_morpheus_workflow_result
   changed_when: true
   when: morpheus_workflow_id != ''
+  no_log: true
 
 - name: Get ID of Morpheus Workflow
   ansible.builtin.set_fact:
@@ -323,6 +336,7 @@
     body_format: json
     validate_certs: false
   register: morpheus_domain_check
+  no_log: true
 
 - name: Set Morpheus Domain ID if exists
   ansible.builtin.set_fact:
@@ -346,6 +360,7 @@
   register: create_morpheus_domain_result
   changed_when: true
   when: morpheus_domain_id == ''
+  no_log: true
 
 - name: Update existing Morpheus Domain
   ansible.builtin.uri:
@@ -365,6 +380,7 @@
   register: update_morpheus_domain_result
   changed_when: true
   when: morpheus_domain_id != ''
+  no_log: true
 
 - name: Get ID of Morpheus Domain ID
   ansible.builtin.set_fact:
@@ -384,6 +400,7 @@
     validate_certs: false
   register: update_morpheus_domain_result
   changed_when: true
+  no_log: true
 
 - name: List created and/or updated Morpheus entities
   ansible.builtin.debug:
