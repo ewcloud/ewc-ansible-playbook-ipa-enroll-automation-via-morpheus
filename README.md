@@ -63,6 +63,24 @@ You can apply changes on the target host by running:
 ansible-playbook playbook.yml
 ```
 
+### 3. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
+> ⚠️ As of 17.07.2025, technical limitations on the side of the 
+[Morpheus API](https://apidocs.morpheusdata.com/v7.0.9/reference/createnetworkdomain)
+lead to unreliable configuration of links between workflows and domains.
+As a workaround, manual action over the Morpheus GUI is required.
+
+Finalize the configuration over the Morpheus GUI:
+
+1. Login to the Morpheus GUI of your EWC environment
+2. From the top navigation bar, go to `Infrastructure > Network`.
+3. Select `Domains` from the sub navigation bar. 
+4. A table will be displayed in the lower portion of the view port, and
+containing details of available domains in your EWC environment. Click on the 
+edit icon (`🖉`) on the same row where your defined domain is listed.
+5. Within the pop-up edit form, click on the `Select Workflow` drop-down 
+menu and select `ipa-enroll-automation`. Click on `SAVE CHANGES` at the 
+bottom of the form to finalize the setup.
+
 ## Inputs
 > ⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
 To avoid unexpected behavior during IPA clients enrollment, ensure the values of all input secrets (i.e. those with
