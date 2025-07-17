@@ -9,11 +9,13 @@ entities, enabling you to edit/automate management of EWC computer resources'
 life cycle via a web-based graphical user interphase (GUI).
 
 Assuming an [IPA server](https://www.freeipa.org/) is already provisioned 
-and configured within your EWC environment, the template is designed to:
-* Setup automation (i.e. Morpheus Workflow) such that:
-  * Any and all new virtual machines created, via the Morpheus GUI, within
-  a user-specified Morpheus Domain, will enroll onto the IPA server's
+and configured within the EWC environment, the template is designed to:
+* Setup automation (i.e. Morpheus Integration, Tasks, Workflow and Network Domain) such that:
+  * New virtual machines created via the Morpheus GUI within
+  a user-defined Morpheus Network Domain, will enroll onto a the IPA server's
   provided DNS and LDAP services.
+  * Enrolled virtual machines will disenroll from the IPA server upon
+  their deletion via Morpheus GUI
 
 
 ## Copyright and License
@@ -43,9 +45,10 @@ Then, proceed to create an Ansible Playbook file to load your customizations:
 ```yaml
 # playbook.yml
 ---
-- name: Setup Morpheus Automation for enrollment into IPA LDAP/DNS of VMs upon provisioning
-  hosts: all
-  become: false
+- name: Setup Morpheus automation IPA client lifecycle management
+  hosts: localhost
+  connection: local
+  gather_facts: false
 
   roles:
     - ewc-ansible-role-ipa-enroll-automation-via-morpheus
@@ -61,7 +64,36 @@ ansible-playbook playbook.yml
 ```
 
 ## Inputs
-> 🛠️ To be defined.
+> ⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
+To avoid unexpected behavior during IPA clients enrollment, ensure the values of all input secrets (i.e. those with
+`morpheus_cypher_` prefix) are set and match to the values currently store by the IPA server in your EWC environment.
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|----------|
+| morpheus_token | Morpheus API access token | `string` | n/a | yes |
+| morpheus_url | Morpheus API URL | `string` | n/a | yes |
+| morpheus_tenant_name | Morpheus tenant name.  Example: `<memberstate>-<organization>-<projectname>` | `string` | n/a | yes |
+| update_morpheus_cypher | flag to update required secrets in Morpheus Cypher. Only `yes` will be accepted to approve | `string` | n/a | yes |
+| morpheus_cypher_ipa_domain | IPA domain name. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| morpheus_cypher_ipa_server_hostname | IPA server host name. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `ldap` | `string` | n/a | no |
+| morpheus_cypher_ipa_admin_username | IPA Directory Manager/Admin username. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
+| morpheus_cypher_ipa_admin_password | IPA Directory Manager/Admin password. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
+
+## Final Environment
+
+Applying this template will configure the following  entities in the Morpheus GUI:
+
+| Name | Type | Description |
+|------|---------|---------|
+| `ewc-flavours` | Morpheus Integration | Links to EWC Community Hub's GitHub repository where Ansible Playbooks for IPA client enrollment/disenrollment are published |
+| `ipa-client-enroll` | Morpheus Task | Executes an Ansible Playbook to carry out IPA client enrollment |
+| `ipa-client-disenroll` | Morpheus Task |  Executes an Ansible Playbook to perform IPA client disenrollment |
+| `ipa-enroll-automation` | Morpheus Workflow | Orchestrates tasks to run specifically during provision and teardown stages of a virtual machine's life cycle  |
+| `<user defined>` | Morpheus Domain | Encapsulates virtual machines and automates workflow triggering |
+| `secret/ipa_domain` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
+| `secret/ipa_server_hostname` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
+| `secret/ipa_admin_username` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
+| `secret/ipa_admin_password` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
 
 ## Changelog
 All notable changes (i.e. fixes, features and breaking changes) are documented 
