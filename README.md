@@ -94,8 +94,8 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| morpheus_token | Morpheus API access token | `string` | n/a | yes |
-| morpheus_url | Morpheus API URL | `string` | n/a | yes |
+| morpheus_api_token | Morpheus API access token | `string` | n/a | yes |
+| morpheus_api_url | Morpheus API URL | `string` | n/a | yes |
 | morpheus_tenant_name | Morpheus tenant name.  Example: `<memberstate>-<organization>-<projectname>` | `string` | n/a | yes |
 | update_morpheus_cypher | flag to update required secrets in Morpheus Cypher. Only `yes` will be accepted to approve | `string` | n/a | yes |
 | morpheus_cypher_ipa_domain | IPA domain name. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |

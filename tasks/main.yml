@@ -2,9 +2,9 @@
 - name: Validate required variables
   ansible.builtin.assert:
     that:
-      - morpheus_token is string and morpheus_token != '' and morpheus_token is defined
-      - morpheus_url is string and morpheus_url != '' and morpheus_url is defined
-      - morpheus_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
+      - morpheus_api_token is string and morpheus_api_token != '' and morpheus_api_token is defined
+      - morpheus_api_url is string and morpheus_api_url != '' and morpheus_api_url is defined
+      - morpheus_api_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
       - morpheus_tenant_name is string and morpheus_tenant_name != '' and morpheus_tenant_name is defined
       - update_morpheus_cypher is string and update_morpheus_cypher != '' and update_morpheus_cypher is defined
       - morpheus_cypher_ipa_domain is string and morpheus_cypher_ipa_domain is defined and morpheus_cypher_ipa_domain != ''
@@ -23,10 +23,10 @@
 
 - name: Gather facts about the Morpheus Tenant
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/whoami"
+    url: "{{ morpheus_api_url }}/api/whoami"
     method: GET
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     validate_certs: false
   register: tenant_check
@@ -42,10 +42,10 @@
 
 - name: Store secrets in Morpheus Cypher (no expire date)
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/cypher/secret/{{ item.key }}?type=string&ttl=0"
+    url: "{{ morpheus_api_url }}/api/cypher/secret/{{ item.key }}?type=string&ttl=0"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -68,10 +68,10 @@
 
 - name: Check for existing Morpheus Integration with ewc-flavours GitHub repository
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/integrations?max=9999"
+    url: "{{ morpheus_api_url }}/api/integrations?max=9999"
     method: GET
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_integration_check
@@ -83,10 +83,10 @@
 
 - name: Create new Morpheus Integration for ewc-flavours GitHub repository
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/integrations"
+    url: "{{ morpheus_api_url }}/api/integrations"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -110,10 +110,10 @@
 
 - name: Update existing Morpheus Integration for ewc-flavours GitHub repository
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/integrations/{{ morpheus_integration_id }}"
+    url: "{{ morpheus_api_url }}/api/integrations/{{ morpheus_integration_id }}"
     method: PUT
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -141,10 +141,10 @@
 
 - name: Check for existing Morpheus Tasks
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/tasks?max=9999"
+    url: "{{ morpheus_api_url }}/api/tasks?max=9999"
     method: GET
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_task_check
@@ -156,10 +156,10 @@
 
 - name: Create new Morpheus Task (to be ran during provision)
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/tasks"
+    url: "{{ morpheus_api_url }}/api/tasks"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -181,10 +181,10 @@
 
 - name: Update existing Morpheus Task (to be ran during provision)
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/tasks/{{ morpheus_task_id_provision }}"
+    url: "{{ morpheus_api_url }}/api/tasks/{{ morpheus_task_id_provision }}"
     method: PUT
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -214,10 +214,10 @@
 
 - name: Create new Morpheus Task (to be ran during teardown)
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/tasks"
+    url: "{{ morpheus_api_url }}/api/tasks"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -239,10 +239,10 @@
 
 - name: Update existing Morpheus Task (to be ran during teardown)
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/tasks/{{ morpheus_task_id_teardown }}"
+    url: "{{ morpheus_api_url }}/api/tasks/{{ morpheus_task_id_teardown }}"
     method: PUT
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -268,10 +268,10 @@
 
 - name: Check for existing Morpheus Workflow
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/task-sets?max=9999"
+    url: "{{ morpheus_api_url }}/api/task-sets?max=9999"
     method: GET
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     validate_certs: false
   register: morpheus_workflow_check
@@ -283,10 +283,10 @@
 
 - name: Create new Morpheus Workflow
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/task-sets"
+    url: "{{ morpheus_api_url }}/api/task-sets"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -307,10 +307,10 @@
 
 - name: Update existing Morpheus Workflow
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/task-sets/{{ morpheus_workflow_id }}"
+    url: "{{ morpheus_api_url }}/api/task-sets/{{ morpheus_workflow_id }}"
     method: PUT
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -333,10 +333,10 @@
 
 - name: Gather facts about the Morpheus Domain
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/networks/domains?max=9999"
+    url: "{{ morpheus_api_url }}/api/networks/domains?max=9999"
     method: GET
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     validate_certs: false
@@ -349,10 +349,10 @@
 
 - name: Create new Morpheus Domain
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/networks/domains"
+    url: "{{ morpheus_api_url }}/api/networks/domains"
     method: POST
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
@@ -369,10 +369,10 @@
 
 - name: Update existing Morpheus Domain
   ansible.builtin.uri:
-    url: "{{ morpheus_url }}/api/networks/domains/{{ morpheus_domain_id }}"
+    url: "{{ morpheus_api_url }}/api/networks/domains/{{ morpheus_domain_id }}"
     method: PUT
     headers:
-      Authorization: "Bearer {{ morpheus_token }}"
+      Authorization: "Bearer {{ morpheus_api_token }}"
       Content-Type: "application/json"
     body_format: json
     body:
