@@ -13,6 +13,10 @@ it easier to get your contribution accepted.
 
 ### Contribution Flow
 
+>💡 The private upstream of this repository uses [GitLab CI](.gitlab-ci.yml) 
+for automation. Changes merged into the main branch trigger the creation of 
+new tag and auto-generated [CHANGELOG.md](./CHANGELOG.md) updates.
+
 On the contributors' side:
 1. Create a topic branch from the main brach to base your work on.
 2. Make commits of logical units (checkout 
@@ -28,11 +32,11 @@ On the maintainers' side:
 
 1. Review, validate/test internally, and provide feedback prior to porting the
 changes into a topic branch in the private upstream of this GitHub repository.
-2. Upon approval, squash-merge changes in the upstream, making sure to leave 
-only one conventional commit as result from the merge; include full 
+2. Upon approval, squash changes in the upstream, making sure to write a 
+conventional commit message in said squashing operation and including full 
 acknowledgement of the contributors (i.e. list their GitHub handles) in the 
 body of the commit message.
-3. Update the [CHANGELOG.md](./CHANGELOG.md), commit-tag it 
+3. Via CI automation, update the [CHANGELOG.md](./CHANGELOG.md), commit-tag it 
 to the main branch and mirror into GitHub.
 4. Mark the relevant GitHub issue is as resolved.
 
