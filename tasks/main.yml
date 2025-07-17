@@ -6,8 +6,8 @@
       - morpheus_url is string and morpheus_url != '' and morpheus_url is defined
       - morpheus_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
       - morpheus_tenant_name is string and morpheus_tenant_name != '' and morpheus_tenant_name is defined
-      - update_morpheus_cypher in [ "yes", "no"]
-      - morpheus_cypher_ipa_domain_name is string and morpheus_cypher_ipa_domain_name is defined and morpheus_cypher_ipa_domain_name!= ''
+      - update_morpheus_cypher is string and update_morpheus_cypher != '' and update_morpheus_cypher is defined
+      - morpheus_cypher_ipa_domain is string and morpheus_cypher_ipa_domain is defined and morpheus_cypher_ipa_domain != ''
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
 
@@ -52,7 +52,7 @@
       value: "{{ item.value }}"
     validate_certs: false
   loop:
-    - { key: "ipa_domain_name", value: "{{ morpheus_cypher_ipa_domain_name }}" }
+    - { key: "ipa_domain", value: "{{ morpheus_cypher_ipa_domain }}" }
     - { key: "ipa_server_hostname", value: "{{ morpheus_cypher_ipa_server_hostname }}" }
     - { key: "ipa_admin_username", value: "{{ morpheus_cypher_ipa_admin_username }}" }
     - { key: "ipa_admin_password", value: "{{ morpheus_cypher_ipa_admin_password }}" }
@@ -61,7 +61,12 @@
   changed_when: true
   no_log: true
 
-- name: Check for existing Morpheus Integration with user-defined git repository
+- name: Get IDs of Morpheus Cypher secrets
+  ansible.builtin.set_fact:
+    morpheus_cypher_secrets: "{{ store_morpheus_cypher_result.results | json_query('[].json.cypher.{id: id, name: itemKey}') }}"
+  when: update_morpheus_cypher == "yes"
+
+- name: Check for existing Morpheus Integration with ewc-flavours GitHub repository
   ansible.builtin.uri:
     url: "{{ morpheus_url }}/api/integrations?max=9999"
     method: GET
@@ -224,7 +229,7 @@
         executeTarget: "resource"
         taskOptions:
           ansibleGitId: "{{ morpheus_integration_id }}"
-          ansiblePlaybook: ipa-client-disenroll-flavour
+          ansiblePlaybook: "ipa-client-disenroll-flavour"
           ansibleGitRef: null
     validate_certs: false
   register: create_morpheus_task_result_teardown
@@ -340,7 +345,7 @@
 
 - name: Set Morpheus Domain ID if exists
   ansible.builtin.set_fact:
-    morpheus_domain_id: "{{ (morpheus_domain_check.json.networkDomains | selectattr('name', 'equalto', morpheus_cypher_ipa_domain_name_name) | first).id | default(None) }}"
+    morpheus_domain_id: "{{ (morpheus_domain_check.json.networkDomains | selectattr('name', 'equalto', morpheus_cypher_ipa_domain) | first).id | default(None) }}"
 
 - name: Create new Morpheus Domain
   ansible.builtin.uri:
@@ -352,7 +357,7 @@
     body_format: json
     body:
       networkDomain:
-        name: "{{ morpheus_cypher_ipa_domain_name_name }}"
+        name: "{{ morpheus_cypher_ipa_domain }}"
         active: true
         domainController: false
         taskSetId: "{{ morpheus_workflow_id }}"
@@ -372,7 +377,7 @@
     body_format: json
     body:
       networkDomain:
-        name: "{{ morpheus_cypher_ipa_domain_name_name }}"
+        name: "{{ morpheus_cypher_ipa_domain }}"
         active: true
         domainController: false
         taskSetId: "{{ morpheus_workflow_id }}"
@@ -409,6 +414,5 @@
       - "Morpheus Git Integration: {'name': 'ewc-flavours', 'id':'{{ morpheus_integration_id }}'}"
       - "Morpheus Tasks: [{'name': 'ipa-client-enroll', 'id': '{{ morpheus_task_id_provision }}'}, {'name': 'ipa-client-disenroll', 'id': '{{ morpheus_task_id_teardown }}'}]"
       - "Morpheus Workflow: {'name': 'ipa-enroll-automation' 'id': '{{ morpheus_workflow_id }}'}"
-      - "Morpheus Domain: {'name': '{{ morpheus_cypher_ipa_domain_name_name }}', 'id': '{{ morpheus_domain_id }}'}"
-      - "{{ 'Morpheus Cypher Secrets:                                                                               ' if update_morpheus_cypher == 'yes' else None }}"
-      - "{{ (store_morpheus_cypher_result.results | map(attribute='json') | flatten | map(attribute='cypher') | list) if update_morpheus_cypher == 'yes' else None }}"
+      - "Morpheus Domain: {'name': '{{ morpheus_cypher_ipa_domain }}', 'id': '{{ morpheus_domain_id }}'}"
+      - "{{ 'Morpheus Cypher Secrets: ' + (morpheus_cypher_secrets | to_json) if update_morpheus_cypher == 'yes' else 'Morpheus Cypher Secrets: None' }}"
