@@ -24,6 +24,12 @@ and configured within the EWC environment, the template is designed to:
 See the [LICENSE](./LICENSE) file for licensing information as it pertains to
 files in this repository.
 
+## Authentication
+
+Before proceeding, if you lack a Morpheus API access token, make sure
+to check out the [EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/How+to+generate+Morpheus+API+access+tokens)
+for steps on how to generate one in a self-service manner.
+
 ## Usage
 
 The step-by-step described below assume your local file system follows the 
@@ -32,7 +38,8 @@ example structure below, with
 repository:
 ```
 .
-├── ewc-ansible-role-ipa-enroll-automation-via-morpheus
+├── roles
+│   └── ewc-ansible-role-ipa-enroll-automation-via-morpheus
 └── playbook.yml
 ```
 
@@ -57,8 +64,7 @@ Then, proceed to create an Ansible Playbook file to load your customizations:
 
 ### 2. Apply the template
 
-
-You can apply changes on the target host by running:
+You can apply changes to by running:
 ```bash
 ansible-playbook playbook.yml
 ```
