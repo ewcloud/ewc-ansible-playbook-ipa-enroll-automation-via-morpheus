@@ -90,7 +90,8 @@ bottom of the form to finalize the setup.
 ## Inputs
 > ⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
 To avoid unexpected behavior during IPA clients enrollment, ensure the values of all input secrets (i.e. those with
-`morpheus_cypher_` prefix) are set and match to the values currently store by the IPA server in your EWC environment.
+`morpheus_cypher_` prefix) are set and match to the values used during the initial IPA server configuration in your
+ EWC environment.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
