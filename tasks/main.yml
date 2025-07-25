@@ -101,7 +101,8 @@
           ansibleRoles: "/roles"
           ansibleGroupVars: "/group_vars"
           ansibleHostVars: "/host_vars"
-          ansibleCommandBus: true
+          ansibleCommandBus: true,
+          ansibleGalaxyEnabled: true
     validate_certs: false
   register: create_morpheus_integration_result
   when: morpheus_integration_id == ''
@@ -128,7 +129,8 @@
           ansibleRoles: "/roles"
           ansibleGroupVars: "/group_vars"
           ansibleHostVars: "/host_vars"
-          ansibleCommandBus: true
+          ansibleCommandBus: true,
+          ansibleGalaxyEnabled: true
     validate_certs: false
   register: update_morpheus_integration_result
   when: morpheus_integration_id != ''
