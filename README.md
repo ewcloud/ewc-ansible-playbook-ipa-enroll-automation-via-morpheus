@@ -1,7 +1,7 @@
-# IPA Enroll Automation Ansible Role
+# IPA Enroll/Disenroll Automation Ansible Playbook
 
 This repository contains a configuration template 
-(i.e. an [Ansible Role](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_reuse_roles.html)) 
+(i.e. an [Ansible Playbook](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks.html)) 
 to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
 Applying this template will trigger the configuration of [Morpheus](https://morpheusdata.com/) 
@@ -10,7 +10,8 @@ life cycle via a web-based graphical user interphase (GUI).
 
 Assuming an [IPA server](https://www.freeipa.org/) is already provisioned 
 and configured within the EWC environment, the template is designed to:
-* Setup automation (i.e. Morpheus Integration, Tasks, Workflow and Network Domain) such that:
+* Execute a one-time setup for automation (i.e. Morpheus Integration, 
+  Tasks, Workflow and Network Domain) such that:
   * New virtual machines created via the Morpheus GUI within
   a user-defined Morpheus Network Domain, will enroll onto a the IPA server's
   provided DNS and LDAP services.
@@ -32,44 +33,37 @@ for steps on how to generate one in a self-service manner.
 
 ## Usage
 
-The step-by-step described below assume your local file system follows the 
-example structure below, with 
-`ewc-ansible-role-ipa-enroll-automation-via-morpheus` being a clone of this
-repository:
-```
-.
-├── roles
-│   └── ewc-ansible-role-ipa-enroll-automation-via-morpheus
-└── playbook.yml
-```
+### 1. Configure and apply the template
 
-### 1. Customize the template
+#### 1.1. Interactive Mode
 
-Edit input values for the template [variables](./vars/main.yml) as needed (see
-[Inputs](#inputs) section for details).
-Then, proceed to create an Ansible Playbook file to load your customizations: 
-
-```yaml
-# playbook.yml
----
-- name: Setup Morpheus automation IPA client lifecycle management
-  hosts: localhost
-  connection: local
-  gather_facts: false
-
-  roles:
-    - ewc-ansible-role-ipa-enroll-automation-via-morpheus
-
-```
-
-### 2. Apply the template
-
-You can apply changes to by running:
+By running the following command, you can trigger an interactive session that
+prompts you for the necessary user inputs, and then applies changes to your 
+target EWC environment:
 ```bash
-ansible-playbook playbook.yml
+ansible-playbook ipa-enroll-automation.yml
 ```
 
-### 3. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
+#### 1.2. Non-Interactive Mode
+
+>💡 To learn more about defining variables at runtime and its security consideration, checkout the
+[official Ansible documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html).
+
+Although not recommended, you can also run in non-interactive mode by passing the 
+`--extra-vars` flag, followed by a `"<input name>=<input value>"` key-value pair.
+The flag and its follow up key-value pair must be set for each and every input ([see inputs section below](#inputs)):
+```bash
+ansible-playbook ipa-enroll-automation.yml \
+  --extra-vars "morpheus_api_token_override=abcdef12-34567-890a-bcde-f1234567890" \
+  --extra-vars "morpheus_api_url_override=https://hcmp.icsi.eumetsat.int" \
+  # ...
+  # all remaining input overrides
+  # ... 
+  --extra-vars "morpheus_cypher_ipa_admin_password_override=my-secret-password"
+```
+
+
+### 2. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
 > ⚠️ As of 17.07.2025, technical limitations on the side of the 
 [Morpheus API](https://apidocs.morpheusdata.com/v7.0.9/reference/createnetworkdomain)
 lead to unreliable configuration of links between workflows and domains.
@@ -95,14 +89,14 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|----------|
-| morpheus_api_token | Morpheus API access token | `string` | n/a | yes |
-| morpheus_api_url | Morpheus API URL | `string` | n/a | yes |
-| morpheus_tenant_name | Morpheus tenant name.  Example: `<memberstate>-<organization>-<projectname>` | `string` | n/a | yes |
-| update_morpheus_cypher | flag to update required secrets in Morpheus Cypher. Only `yes` will be accepted to approve | `string` | n/a | yes |
-| morpheus_cypher_ipa_domain | IPA domain name. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
-| morpheus_cypher_ipa_server_hostname | IPA server host name. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `ldap` | `string` | n/a | no |
-| morpheus_cypher_ipa_admin_username | IPA Directory Manager/Admin username. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
-| morpheus_cypher_ipa_admin_password | IPA Directory Manager/Admin password. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
+| morpheus_api_token_override | access token of the Morpheus API | `string` | n/a | yes |
+| morpheus_api_url_override| Morpheus API URL. Examples: `https://morpheus.ecmwf.int`, `https://hcmp.icsi.eumetsat.int` | `string` | n/a | yes |
+| morpheus_tenant_name_override| Morpheus tenant name.  Example: `<memberstate>-<organization>-<projectname>` | `string` | n/a | yes |
+| update_morpheus_cypher_override | flag to update required secrets in Morpheus Cypher. Only `yes` will be accepted to approve | `string` | n/a | yes |
+| morpheus_cypher_ipa_domain_override | name of domain managed by the IPA server. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| morpheus_cypher_ipa_server_hostname_override | hostname of the IPA server. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `ipa-server` | `string` | n/a | no |
+| morpheus_cypher_ipa_admin_username_override | username of IPA Directory Manager/Admin. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `ipa-admin` | `string` | n/a | no |
+| morpheus_cypher_ipa_admin_password_override | password of IPA Directory Manager/Admin. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
 
 ## Final Environment
 
