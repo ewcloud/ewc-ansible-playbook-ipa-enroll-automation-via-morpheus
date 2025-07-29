@@ -1,0 +1,54 @@
+---
+- name: Setup Morpheus Automation for enrollment into IPA LDAP/DNS of VMs upon provisioning
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_prompt:
+    - name: morpheus_api_token_override
+      prompt: access token of the Morpheus API
+      private: true
+      unsafe: true
+
+    - name: morpheus_api_url_override
+      prompt: Morpheus API URL
+      private: false
+
+    - name: morpheus_tenant_name_override
+      prompt: Morpheus tenant name
+      private: false
+
+    - name: update_morpheus_cypher_override
+      prompt: flag to update required secrets in Morpheus Cypher
+      private: false
+
+    - name: morpheus_cypher_ipa_domain_override
+      prompt: name of domain managed by the IPA server
+      private: false
+
+    - name: morpheus_cypher_ipa_server_hostname_override
+      prompt: hostname of the IPA server
+      private: false
+    
+    - name: morpheus_cypher_ipa_admin_username_override
+      prompt: username of IPA Directory Manager/Admin
+      private: false
+
+    - name: morpheus_cypher_ipa_admin_password_override
+      prompt: password of IPA Directory Manager/Admin
+      private: false
+      confirm: true
+
+  tasks:
+    - name: IPA Enroll Automation Via Morpheus Ansible Role
+      ansible.builtin.include_role:
+        name: ipa_enroll_automation_via_morpheus
+      vars:
+        morpheus_api_token: "{{ morpheus_api_token_override }}"
+        morpheus_api_url: "{{ morpheus_api_url_override }}"
+        morpheus_tenant_name: "{{ morpheus_tenant_name_override }}"
+        morpheus_cypher_ipa_domain: "{{ morpheus_cypher_ipa_domain_override }}"
+        morpheus_cypher_ipa_server_hostname: "{{ morpheus_cypher_ipa_server_hostname_override }}"
+        morpheus_cypher_ipa_admin_username: "{{ morpheus_cypher_ipa_admin_username_override }}"
+        morpheus_cypher_ipa_admin_password: "{{ morpheus_cypher_ipa_admin_password_override }}"
+        update_morpheus_cypher: "{{ update_morpheus_cypher_override }}"
