@@ -1,2 +1,3 @@
-vars/main.yml yaml[line-length] # disable the line-length check for in user's input spec file
-tasks/main.yml yaml[line-length] # disable the line-length check for in user's input spec file
+roles/ipa_enroll_automation_via_morpheus/vars/main.yml yaml[line-length]
+roles/ipa_enroll_automation_via_morpheus/tasks/main.yml yaml[line-length]
+roles/ipa_enroll_automation_via_morpheus/vars/main.yml var-naming[no-role-prefix]
