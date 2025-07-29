@@ -1,16 +1,16 @@
 # IPA Enroll/Disenroll Automation Ansible Playbook
 
-This repository contains a configuration template 
-(i.e. an [Ansible Playbook](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks.html)) 
+This repository contains a configuration template
+(i.e. an [Ansible Playbook](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks.html))
 to customize your environment in the
 [European Weather Cloud (EWC)](https://europeanweather.cloud/).
-Applying this template will trigger the configuration of [Morpheus](https://morpheusdata.com/) 
+Applying this template will trigger the configuration of [Morpheus](https://morpheusdata.com/)
 entities, enabling you to edit/automate management of EWC computer resources'
 life cycle via a web-based graphical user interphase (GUI).
 
-Assuming an [IPA server](https://www.freeipa.org/) is already provisioned 
+Assuming an [IPA server](https://www.freeipa.org/) is already provisioned
 and configured within the EWC environment, the template is designed to:
-* Execute a one-time setup for automation (i.e. Morpheus Integration, 
+* Execute a one-time setup for automation (i.e. Morpheus Integration,
   Tasks, Workflow and Network Domain) such that:
   * New virtual machines created via the Morpheus GUI within
   a user-defined Morpheus Network Domain, will enroll onto a the IPA server's
@@ -38,7 +38,7 @@ for steps on how to generate one in a self-service manner.
 #### 1.1. Interactive Mode
 
 By running the following command, you can trigger an interactive session that
-prompts you for the necessary user inputs, and then applies changes to your 
+prompts you for the necessary user inputs, and then applies changes to your
 target EWC environment:
 ```bash
 ansible-playbook ipa-enroll-automation.yml
@@ -49,7 +49,7 @@ ansible-playbook ipa-enroll-automation.yml
 >💡 To learn more about defining variables at runtime and its security consideration, checkout the
 [official Ansible documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html).
 
-Although not recommended, you can also run in non-interactive mode by passing the 
+Although not recommended, you can also run in non-interactive mode by passing the
 `--extra-vars` flag, followed by a `"<input name>=<input value>"` key-value pair.
 The flag and its follow up key-value pair must be set for each and every input ([see inputs section below](#inputs)):
 ```bash
@@ -58,13 +58,13 @@ ansible-playbook ipa-enroll-automation.yml \
   --extra-vars "morpheus_api_url_override=https://hcmp.icsi.eumetsat.int" \
   # ...
   # all remaining input overrides
-  # ... 
+  # ...
   --extra-vars "morpheus_cypher_ipa_admin_password_override=my-secret-password"
 ```
 
 
 ### 2. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
-> ⚠️ As of 17.07.2025, technical limitations on the side of the 
+> ⚠️ As of 17.07.2025, technical limitations on the side of the
 [Morpheus API](https://apidocs.morpheusdata.com/v7.0.9/reference/createnetworkdomain)
 lead to unreliable configuration of links between workflows and domains.
 As a workaround, manual action over the Morpheus GUI is required.
@@ -73,12 +73,12 @@ Finalize the configuration over the Morpheus GUI:
 
 1. Login to the Morpheus GUI of your EWC environment
 2. From the top navigation bar, go to `Infrastructure > Network`.
-3. Select `Domains` from the sub navigation bar. 
+3. Select `Domains` from the sub navigation bar.
 4. A table will be displayed in the lower portion of the view port, and
-containing details of available domains in your EWC environment. Click on the 
+containing details of available domains in your EWC environment. Click on the
 edit icon (`🖉`) on the same row where your defined domain is listed.
-5. Within the pop-up edit form, click on the `Select Workflow` drop-down 
-menu and select `ipa-enroll-automation`. Click on `SAVE CHANGES` at the 
+5. Within the pop-up edit form, click on the `Select Workflow` drop-down
+menu and select `ipa-enroll-automation`. Click on `SAVE CHANGES` at the
 bottom of the form to finalize the setup.
 
 ## Inputs
@@ -115,19 +115,19 @@ Applying this template will configure the following  entities in the Morpheus GU
 | `secret/ipa_admin_password` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
 
 ## Changelog
-All notable changes (i.e. fixes, features and breaking changes) are documented 
+All notable changes (i.e. fixes, features and breaking changes) are documented
 in the [CHANGELOG.md](./CHANGELOG.md).
 
 ## Contributing
 
 Thanks for taking the time to join our community and start contributing!
 Please make sure to:
-* Familiarize yourself with our [Code of Conduct](./CODE_OF_CONDUCT.md) before 
+* Familiarize yourself with our [Code of Conduct](./CODE_OF_CONDUCT.md) before
 contributing.
-* See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to request 
+* See [CONTRIBUTING.md](./CONTRIBUTING.md) for instructions on how to request
 or submit changes.
 
 ## Authors
 
-[European Weather Cloud](http://support.europeanweather.cloud/) 
+[European Weather Cloud](http://support.europeanweather.cloud/)
 <[support@europeanweather.cloud](mailto:support@europeanweather.cloud)>
