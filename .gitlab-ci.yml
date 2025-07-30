@@ -17,7 +17,7 @@ ansible-lint:
   image: registry.gitlab.com/pipeline-components/ansible-lint:0.79.0
   stage: lint
   script:
-    - ansible-lint --offline .
+    - ansible-lint --offline *.yml
     - ansible-lint --offline roles
   rules:
     - if: $CI_COMMIT_TAG || $CI_COMMIT_TITLE =~ /^chore.*/
