@@ -1,4 +1,4 @@
 ipa-enroll-automation.yml var-naming[no-role-prefix]
-roles/ipa_enroll_automation_via_morpheus/vars/main.yml yaml[line-length]
-roles/ipa_enroll_automation_via_morpheus/tasks/main.yml yaml[line-length]
-roles/ipa_enroll_automation_via_morpheus/vars/main.yml var-naming[no-role-prefix]
+roles/ipa-enroll-automation-via-morpheus/vars/main.yml yaml[line-length]
+roles/ipa-enroll-automation-via-morpheus/tasks/main.yml yaml[line-length]
+roles/ipa-enroll-automation-via-morpheus/vars/main.yml var-naming[no-role-prefix]

@@ -42,7 +42,7 @@
   tasks:
     - name: IPA Enroll Automation Via Morpheus Ansible Role
       ansible.builtin.include_role:
-        name: ipa_enroll_automation_via_morpheus
+        name: ipa-enroll-automation-via-morpheus
       vars:
         morpheus_api_token: "{{ morpheus_api_token_override }}"
         morpheus_api_url: "{{ morpheus_api_url_override }}"
