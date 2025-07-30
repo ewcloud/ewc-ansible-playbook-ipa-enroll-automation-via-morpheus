@@ -29,7 +29,7 @@
     - name: morpheus_cypher_ipa_server_hostname_override
       prompt: hostname of the IPA server
       private: false
-    
+
     - name: morpheus_cypher_ipa_admin_username_override
       prompt: username of IPA Directory Manager/Admin
       private: false
