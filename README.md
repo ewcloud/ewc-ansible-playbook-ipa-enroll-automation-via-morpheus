@@ -9,14 +9,14 @@ entities, enabling you to edit/automate management of EWC computer resources'
 life cycle via a web-based graphical user interphase (GUI).
 
 Assuming an [IPA server](https://www.freeipa.org/) is already provisioned
-and configured within the EWC environment, the template is designed to:
-* Execute a one-time setup for automation (i.e. Morpheus Integration,
-  Tasks, Workflow and Network Domain) such that:
-  * New virtual machines created via the Morpheus GUI within
-  a user-defined Morpheus Network Domain, will enroll onto a the IPA server's
-  provided DNS and LDAP services.
-  * Enrolled virtual machines will disenroll from the IPA server upon
-  their deletion via Morpheus GUI
+and configured within the EWC environment, this template simplifies the remaining 
+configuration to a one-time setup for Morpheus (i.e. Morpheus 
+Integration, Tasks, Workflow and Network Domain) such that:
+* New virtual machines created via the Morpheus GUI, within
+a user-defined Morpheus Network Domain, will enroll onto a the IPA server's
+provided DNS and LDAP services.
+* Enrolled virtual machines will disenroll from the IPA server upon
+their deletion via Morpheus GUI
 
 
 ## Copyright and License
@@ -36,7 +36,7 @@ Contact [EUMETSAT](http://www.eumetsat.int) for details on the usage and distrib
 ## Authentication
 
 Before proceeding, if you lack a Morpheus API access token, make sure
-to check out the [EWC documentation](https://confluence.ecmwf.int/display/EWCLOUDKB/How+to+generate+Morpheus+API+access+tokens)
+to check out the [Morpheus documentation](https://docs.morpheusdata.com/en/7.0.9/administration/user_settings/user_settings.html?highlight=api%20token#api-access)
 for steps on how to generate one in a self-service manner.
 
 ## Usage
@@ -54,21 +54,22 @@ ansible-playbook ipa-enroll-automation.yml
 
 #### 1.2. Non-Interactive Mode
 
->💡 To learn more about defining variables at runtime and its security consideration, checkout the
+>💡 To learn more about defining variables at runtime, checkout the
 [official Ansible documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html).
 
 Although not recommended, you can also run in non-interactive mode by passing the
-`--extra-vars` flag, followed by a `"<input name>=<input value>"` key-value pair.
+`--extra-vars` o `-e` flag, followed by a `"<input name>=<input value>"` key-value pair.
 The flag and its follow up key-value pair must be set for each and every input ([see inputs section below](#inputs)):
 ```bash
-ansible-playbook ipa-enroll-automation.yml \
-  --extra-vars "morpheus_api_token_override=abcdef12-34567-890a-bcde-f1234567890" \
-  --extra-vars "morpheus_api_url_override=https://hcmp.icsi.eumetsat.int" \
+ansible-playbook  \
+  -e "morpheus_api_token_override=abcdef12-34567-890a-bcde-f1234567890" \
+  -e "morpheus_api_url_override=https://hcmp.icsi.eumetsat.int" \
   # ...
   # all remaining input overrides
   # ...
-  --extra-vars "morpheus_cypher_ipa_admin_password_override=my-secret-password"
-```
+  -e "morpheus_cypher_ipa_admin_password_override=my-secret-password" \
+  ipa-enroll-automation.yml
+  ```
 
 
 ### 2. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
@@ -106,9 +107,7 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 | morpheus_cypher_ipa_admin_username_override | username of IPA Directory Manager/Admin. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment. Example: `ipa-admin` | `string` | n/a | no |
 | morpheus_cypher_ipa_admin_password_override | password of IPA Directory Manager/Admin. Must match with the value set used during used during configuration of a pre-existing IPA server within the EWC environment | `string` | n/a | no |
 
-## Final Environment
-
-Applying this template will configure the following  entities in the Morpheus GUI:
+## Outputs
 
 | Name | Type | Description |
 |------|---------|---------|
