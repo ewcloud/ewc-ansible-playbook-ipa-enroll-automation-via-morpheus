@@ -64,6 +64,18 @@ Before proceeding, if you lack a Morpheus API access token, make sure
 to check out the [Morpheus documentation](https://docs.morpheusdata.com/en/7.0.9/administration/user_settings/user_settings.html#api-access)
 for steps on how to generate one on a self-service manner.
 
+## Prerequisites
+>💡 Versions listed correspond to minimal prerequisites.
+
+To successfully run this playbook, the following packages should be available in your work environment:
+
+| Name | Version | License | Home URL |
+|------|---------|----- |-----|
+| git | 2.0 | GPLv2  | https://git-scm.com/downloads |
+| python | 3.9   | PSF | https://www.python.org/downloads  |
+| ansible | 2.15 |  GPLv3+ | https://pypi.org/project/ansible  |
+| jmespath| 1.0 | MIT | https://pypi.org/project/jmespath  |
+
 ## Usage
 
 ### 1. Configure and apply the template
