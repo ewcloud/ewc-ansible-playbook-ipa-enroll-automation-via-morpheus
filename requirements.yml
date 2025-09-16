@@ -1,0 +1,8 @@
+roles:
+  - name: ewc-ansible-role-ipa-client-enroll-1.0
+    src: https://github.com/ewcloud/ewc-ansible-role-ipa-client-enroll.git
+    version: 1.0.0
+
+  - name: ewc-ansible-role-ipa-client-disenroll-1.0
+    src: https://github.com/ewcloud/ewc-ansible-role-ipa-client-disenroll.git
+    version: 1.0.0
