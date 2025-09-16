@@ -6,20 +6,44 @@
       - morpheus_api_url is string and morpheus_api_url != '' and morpheus_api_url is defined
       - morpheus_api_url | regex_search('^https?://[a-zA-Z0-9.\-\/\:]{1,}')
       - morpheus_tenant_name is string and morpheus_tenant_name != '' and morpheus_tenant_name is defined
-      - update_morpheus_cypher is string and update_morpheus_cypher != '' and update_morpheus_cypher is defined
-      - morpheus_cypher_ipa_domain is string and morpheus_cypher_ipa_domain is defined and morpheus_cypher_ipa_domain != ''
+      - update_morpheus_cypher != '' and update_morpheus_cypher is defined
     fail_msg: "Input validation failed. See README.md for information on required inputs and their format."
     success_msg: "User input configuration is valid."
 
 - name: Validate optional variables
   ansible.builtin.assert:
     that:
+      - morpheus_cypher_ipa_domain is string and morpheus_cypher_ipa_domain is defined and morpheus_cypher_ipa_domain != ''
       - morpheus_cypher_ipa_server_hostname is string and morpheus_cypher_ipa_server_hostname is defined and morpheus_cypher_ipa_server_hostname != ''
       - morpheus_cypher_ipa_admin_username is string and morpheus_cypher_ipa_admin_username is defined and morpheus_cypher_ipa_admin_username != ''
       - morpheus_cypher_ipa_admin_password is string and morpheus_cypher_ipa_admin_password is defined and morpheus_cypher_ipa_admin_password != ''
     fail_msg: "Input validation failed. See README.md for information on optional inputs and their format."
     success_msg: "User optional input configuration is valid."
-  when: update_morpheus_cypher == "yes"
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
+
+- name: Set static Morpheus configurations
+  ansible.builtin.set_fact:
+    morpheus_facts:
+      integration:
+        name: "IPA Client Enroll Automation Via Morpheus"
+        serviceUrl: "https://github.com/ewcloud/ewc-ansiple-playbook-ipa-enroll-automation-via-morpheus.git"
+        config:
+          defaultBranch: "main"
+          ansiblePlaybooks: "/"
+          ansibleRoles: "/roles"
+          ansibleGroupVars: "/group_vars"
+          ansibleHostVars: "/host_vars"
+          ansibleCommandBus: true
+          ansibleGalaxyEnabled: true
+      tasks:
+        - name: "Enroll IPA Client"
+          ansiblePlaybook: "playbooks/morpheus/ipa-client-enroll-via-morpheus"
+          ansibleGitRef: "quality-assurance"
+        - name: "Disenroll IPA Client"
+          ansiblePlaybook: "playbooks/morpheus/ipa-client-disenroll-via-morpheus"
+          ansibleGitRef: "quality-assurance"
+      workflow:
+        name: "IPA Client Enroll Automation Via Morpheus"
 
 - name: Gather facts about the Morpheus Tenant
   ansible.builtin.uri:
@@ -38,7 +62,7 @@
   when: tenant_check.json.user.account.name == morpheus_tenant_name
   failed_when: tenant_check.json.user.account.name != morpheus_tenant_name
   vars:
-    error_msg: "Tenant '{{ morpheus_tenant_name }}' does not exist of wrong access token was passed."
+    error_msg: "Tenant '{{ morpheus_tenant_name }}' does not exist or wrong access token given."
 
 - name: Store secrets in Morpheus Cypher (no expire date)
   ansible.builtin.uri:
@@ -57,16 +81,16 @@
     - { key: "ipa_admin_username", value: "{{ morpheus_cypher_ipa_admin_username }}" }
     - { key: "ipa_admin_password", value: "{{ morpheus_cypher_ipa_admin_password }}" }
   register: store_morpheus_cypher_result
-  when: update_morpheus_cypher == "yes"
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
   changed_when: true
   no_log: true
 
 - name: Get IDs of Morpheus Cypher secrets
   ansible.builtin.set_fact:
     morpheus_cypher_secrets: "{{ store_morpheus_cypher_result.results | json_query('[].json.cypher.{id: id, name: itemKey}') }}"
-  when: update_morpheus_cypher == "yes"
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
 
-- name: Check for existing Morpheus Integration with ewc-flavours GitHub repository
+- name: Check for existing Morpheus Integration with GitHub repository
   ansible.builtin.uri:
     url: "{{ morpheus_api_url }}/api/integrations?max=9999"
     method: GET
@@ -79,9 +103,9 @@
 
 - name: Set Morpheus Integration ID if exists
   ansible.builtin.set_fact:
-    morpheus_integration_id: "{{ (morpheus_integration_check.json.integrations | selectattr('name', 'equalto', 'ewc-flavours') | first).id | default(None) }}"
+    morpheus_integration_id: "{{ (morpheus_integration_check.json.integrations | selectattr('name', 'equalto', morpheus_facts.integration.name) | first).id | default(None) }}"
 
-- name: Create new Morpheus Integration for ewc-flavours GitHub repository
+- name: Create new Morpheus Integration for GitHub repository
   ansible.builtin.uri:
     url: "{{ morpheus_api_url }}/api/integrations"
     method: POST
@@ -91,25 +115,19 @@
     body_format: json
     body:
       integration:
-        name: "ewc-flavours"
+        name: "{{ morpheus_facts.integration.name }}"
         type: ansible
         enabled: true
-        serviceUrl: "https://github.com/ewcloud/ewc-flavours.git"
-        config:
-          defaultBranch: "main"
-          ansiblePlaybooks: "/"
-          ansibleRoles: "/roles"
-          ansibleGroupVars: "/group_vars"
-          ansibleHostVars: "/host_vars"
-          ansibleCommandBus: true,
-          ansibleGalaxyEnabled: true
+        serviceUrl: "{{ morpheus_facts.integration.serviceUrl }}"
+        config: >-
+          {{ morpheus_facts.integration.config }}
     validate_certs: false
   register: create_morpheus_integration_result
   when: morpheus_integration_id == ''
   changed_when: true
   no_log: true
 
-- name: Update existing Morpheus Integration for ewc-flavours GitHub repository
+- name: Update existing Morpheus Integration for GitHub repository
   ansible.builtin.uri:
     url: "{{ morpheus_api_url }}/api/integrations/{{ morpheus_integration_id }}"
     method: PUT
@@ -119,18 +137,12 @@
     body_format: json
     body:
       integration:
-        name: "ewc-flavours"
+        name: "{{ morpheus_facts.integration.name }}"
         type: ansible
         enabled: true
-        serviceUrl: "https://github.com/ewcloud/ewc-flavours.git"
-        config:
-          defaultBranch: "main"
-          ansiblePlaybooks: "/"
-          ansibleRoles: "/roles"
-          ansibleGroupVars: "/group_vars"
-          ansibleHostVars: "/host_vars"
-          ansibleCommandBus: true,
-          ansibleGalaxyEnabled: true
+        serviceUrl: "{{ morpheus_facts.integration.serviceUrl }}"
+        config: >-
+          {{ morpheus_facts.integration.config }}
     validate_certs: false
   register: update_morpheus_integration_result
   when: morpheus_integration_id != ''
@@ -154,7 +166,7 @@
 
 - name: Set Morpheus Task ID if exists (to be ran during provision)
   ansible.builtin.set_fact:
-    morpheus_task_id_provision: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', 'ipa-client-enroll') | first).id | default(None) }}"
+    morpheus_task_id_provision: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', morpheus_facts.tasks[0].name) | first).id | default(None) }}"
 
 - name: Create new Morpheus Task (to be ran during provision)
   ansible.builtin.uri:
@@ -166,15 +178,18 @@
     body_format: json
     body:
       task:
-        name: "ipa-client-enroll"
+        name: "{{ morpheus_facts.tasks[0].name }}"
         visibility: "private"
         taskType:
           code: "ansibleTask"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
         executeTarget: "resource"
         taskOptions:
           ansibleGitId: "{{ morpheus_integration_id }}"
-          ansiblePlaybook: "ipa-client-enroll-flavour"
-          ansibleGitRef: null
+          ansiblePlaybook: "{{ morpheus_facts.tasks[0].ansiblePlaybook }}"
+          ansibleGitRef: "{{ morpheus_facts.tasks[0].ansibleGitRef }}"
     validate_certs: false
   register: create_morpheus_task_result_provision
   when: morpheus_task_id_provision == ''
@@ -191,15 +206,18 @@
     body_format: json
     body:
       task:
-        name: "ipa-client-enroll"
+        name: "{{ morpheus_facts.tasks[0].name }}"
         visibility: "private"
         taskType:
           code: "ansibleTask"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
         executeTarget: "resource"
         taskOptions:
           ansibleGitId: "{{ morpheus_integration_id }}"
-          ansiblePlaybook: "ipa-client-enroll-flavour"
-          ansibleGitRef: null
+          ansiblePlaybook: "{{ morpheus_facts.tasks[0].ansiblePlaybook }}"
+          ansibleGitRef: "{{ morpheus_facts.tasks[0].ansibleGitRef }}"
     validate_certs: false
   register: update_morpheus_task_result_provision
   when: morpheus_task_id_provision != ''
@@ -212,7 +230,7 @@
 
 - name: Set Morpheus Task ID if exists (to be ran during teardown)
   ansible.builtin.set_fact:
-    morpheus_task_id_teardown: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', 'ipa-client-disenroll') | first).id | default(None) }}"
+    morpheus_task_id_teardown: "{{ (morpheus_task_check.json.tasks | selectattr('name', 'equalto', morpheus_facts.tasks[1].name) | first).id | default(None) }}"
 
 - name: Create new Morpheus Task (to be ran during teardown)
   ansible.builtin.uri:
@@ -224,15 +242,18 @@
     body_format: json
     body:
       task:
-        name: "ipa-client-disenroll"
+        name: "{{ morpheus_facts.tasks[1].name }}"
         visibility: "private"
         taskType:
           code: "ansibleTask"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
         executeTarget: "resource"
         taskOptions:
           ansibleGitId: "{{ morpheus_integration_id }}"
-          ansiblePlaybook: "ipa-client-disenroll-flavour"
-          ansibleGitRef: null
+          ansiblePlaybook: "{{ morpheus_facts.tasks[1].ansiblePlaybook }}"
+          ansibleGitRef: "{{ morpheus_facts.tasks[1].ansibleGitRef }}"
     validate_certs: false
   register: create_morpheus_task_result_teardown
   when: morpheus_task_id_teardown == ''
@@ -249,15 +270,18 @@
     body_format: json
     body:
       task:
-        name: "ipa-client-disenroll"
+        name: "{{ morpheus_facts.tasks[1].name }}"
         visibility: "private"
         taskType:
           code: "ansibleTask"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
         executeTarget: "resource"
         taskOptions:
           ansibleGitId: "{{ morpheus_integration_id }}"
-          ansiblePlaybook: "ipa-client-disenroll-flavour"
-          ansibleGitRef: null
+          ansiblePlaybook: "{{ morpheus_facts.tasks[1].ansiblePlaybook }}"
+          ansibleGitRef: "{{ morpheus_facts.tasks[1].ansibleGitRef }}"
     validate_certs: false
   register: update_morpheus_task_result_teardown
   when: morpheus_task_id_teardown != ''
@@ -281,7 +305,7 @@
 
 - name: Set Morpheus Workflow ID if exists
   ansible.builtin.set_fact:
-    morpheus_workflow_id: "{{ (morpheus_workflow_check.json.taskSets | selectattr('name', 'equalto', 'ipa-enroll-automation') | first).id | default(None) }}"
+    morpheus_workflow_id: "{{ (morpheus_workflow_check.json.taskSets | selectattr('name', 'equalto', morpheus_facts.workflow.name) | first).id | default(None) }}"
 
 - name: Create new Morpheus Workflow
   ansible.builtin.uri:
@@ -293,7 +317,7 @@
     body_format: json
     body:
       taskSet:
-        name: "ipa-enroll-automation"
+        name: "{{ morpheus_facts.workflow.name }}"
         visibility: "private"
         type: "provision"
         tasks:
@@ -301,6 +325,9 @@
             taskPhase: "provision"
           - taskId: "{{ morpheus_task_id_teardown }}"
             taskPhase: "teardown"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
     validate_certs: false
   register: create_morpheus_workflow_result
   changed_when: true
@@ -317,12 +344,15 @@
     body_format: json
     body:
       taskSet:
-        name: "ipa-enroll-automation"
+        name: "{{ morpheus_facts.workflow.name }}"
         visibility: "private"
         type: "provision"
         tasks:
           - taskId: "{{ morpheus_task_id_provision }}"
             taskPhase: "provision"
+        labels:
+          - "ipa-enroll-automation-via-morpheus"
+          - "ewc-community-hub"
     validate_certs: false
   register: update_morpheus_workflow_result
   changed_when: true
@@ -397,8 +427,8 @@
   ansible.builtin.debug:
     msg:
       - "Morpheus Tenant: {'name': '{{ morpheus_tenant_name }}',  'id': '{{ morpheus_tenant_id }}'}"
-      - "Morpheus Git Integration: {'name': 'ewc-flavours', 'id':'{{ morpheus_integration_id }}'}"
-      - "Morpheus Tasks: [{'name': 'ipa-client-enroll', 'id': '{{ morpheus_task_id_provision }}'}, {'name': 'ipa-client-disenroll', 'id': '{{ morpheus_task_id_teardown }}'}]"
-      - "Morpheus Workflow: {'name': 'ipa-enroll-automation' 'id': '{{ morpheus_workflow_id }}'}"
+      - "Morpheus Git Integration: {'name': '{{ morpheus_facts.integration.name }}', 'id':'{{ morpheus_integration_id }}'}"
+      - "Morpheus Tasks: [{'name': '{{ morpheus_facts.tasks[0].name }}', 'id': '{{ morpheus_task_id_provision }}'}, {'name': '{{ morpheus_facts.tasks[1].name }}', 'id': '{{ morpheus_task_id_teardown }}'}]"
+      - "Morpheus Workflow: {'name': '{{ morpheus_facts.workflow.name }}', 'id': '{{ morpheus_workflow_id }}'}"
       - "Morpheus Domain: {'name': '{{ morpheus_cypher_ipa_domain }}', 'id': '{{ morpheus_domain_id }}'}"
-      - "{{ 'Morpheus Cypher Secrets: ' + (morpheus_cypher_secrets | to_json) if update_morpheus_cypher == 'yes' else 'Morpheus Cypher Secrets: None' }}"
+      - "{{ 'Morpheus Cypher Secrets: ' + (morpheus_cypher_secrets | to_json) if (update_morpheus_cypher == 'yes' or update_morpheus_cypher == True)  else 'Morpheus Cypher Secrets: None' }}"

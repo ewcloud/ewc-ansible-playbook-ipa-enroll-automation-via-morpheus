@@ -1,54 +1,74 @@
 ---
-- name: Setup Morpheus Automation for enrollment into IPA LDAP/DNS of VMs upon provisioning
+- name: Prompt for user inputs
   hosts: localhost
   connection: local
   gather_facts: false
 
   vars_prompt:
-    - name: morpheus_api_token_override
+    - name: morpheus_api_token
       prompt: access token of the Morpheus API
       private: true
       unsafe: true
 
-    - name: morpheus_api_url_override
+    - name: morpheus_api_url
       prompt: Morpheus API URL
       private: false
 
-    - name: morpheus_tenant_name_override
+    - name: morpheus_tenant_name
       prompt: Morpheus tenant name
       private: false
 
-    - name: update_morpheus_cypher_override
-      prompt: flag to update required secrets in Morpheus Cypher
+    - name: update_morpheus_cypher
+      prompt: flag to update IPA administration data kept in Morpheus Cypher. Only "yes" will be accepted to approve
       private: false
 
-    - name: morpheus_cypher_ipa_domain_override
-      prompt: name of domain managed by the IPA server
-      private: false
-
-    - name: morpheus_cypher_ipa_server_hostname_override
-      prompt: hostname of the IPA server
-      private: false
-
-    - name: morpheus_cypher_ipa_admin_username_override
-      prompt: username of IPA Directory Manager/Admin
-      private: false
-
-    - name: morpheus_cypher_ipa_admin_password_override
-      prompt: password of IPA Directory Manager/Admin
-      private: false
+    - name: morpheus_cypher_ipa_domain
+      prompt: name of domain managed by the IPA server.  Will be ignored if update_morpheus_cypher!=yes. If set, should match with the value set used during configuration of an existing IPA server within the EWC environment. Press Enter to skip
+      private: true
       confirm: true
+
+    - name: morpheus_cypher_ipa_server_hostname
+      prompt: hostname of the IPA server. Will be ignored if update_morpheus_cypher!=yes. If set, should match the value used during configuration of an existing IPA server within the EWC environment. Press Enter to skip
+      private: true
+      confirm: true
+
+    - name: morpheus_cypher_ipa_admin_username
+      prompt: username of the administrator account from the IPA server. Will be ignored if update_morpheus_cypher!=yes. If set, should match the value used during configuration of an existing IPA server within the EWC environment. Press Enter to skip
+      private: true
+      confirm: true
+
+    - name: morpheus_cypher_ipa_admin_password
+      prompt: password of the administrator account from the IPA server. Will be ignored if update_morpheus_cypher!=yes. If set, should match the value set used during configuration of an existing IPA server within the EWC environment. Press Enter to skip
+      private: true
+      confirm: true
+
+  tasks:
+    - name: Store user input as localhost facts
+      ansible.builtin.set_fact:
+        morpheus_api_token_fact: "{{ morpheus_api_token }}"
+        morpheus_api_url_fact: "{{ morpheus_api_url }}"
+        morpheus_tenant_name_fact: "{{ morpheus_tenant_name }}"
+        update_morpheus_cypher_fact: "{{ update_morpheus_cypher }}"
+        morpheus_cypher_ipa_domain_fact: "{{ morpheus_cypher_ipa_domain }}"
+        morpheus_cypher_ipa_server_hostname_fact: "{{ morpheus_cypher_ipa_server_hostname }}"
+        morpheus_cypher_ipa_admin_username_fact: "{{ morpheus_cypher_ipa_admin_username }}"
+        morpheus_cypher_ipa_admin_password_fact: "{{ morpheus_cypher_ipa_admin_password }}"
+
+- name: Setup Morpheus Automation for enrollment into IPA LDAP/DNS of VMs upon provisioning
+  hosts: localhost
+  connection: local
+  gather_facts: false
 
   tasks:
     - name: IPA Enroll Automation Via Morpheus Ansible Role
       ansible.builtin.include_role:
         name: ipa-enroll-automation-via-morpheus
       vars:
-        morpheus_api_token: "{{ morpheus_api_token_override }}"
-        morpheus_api_url: "{{ morpheus_api_url_override }}"
-        morpheus_tenant_name: "{{ morpheus_tenant_name_override }}"
-        morpheus_cypher_ipa_domain: "{{ morpheus_cypher_ipa_domain_override }}"
-        morpheus_cypher_ipa_server_hostname: "{{ morpheus_cypher_ipa_server_hostname_override }}"
-        morpheus_cypher_ipa_admin_username: "{{ morpheus_cypher_ipa_admin_username_override }}"
-        morpheus_cypher_ipa_admin_password: "{{ morpheus_cypher_ipa_admin_password_override }}"
-        update_morpheus_cypher: "{{ update_morpheus_cypher_override }}"
+        morpheus_api_token: "{{ hostvars['localhost']['morpheus_api_token_fact'] }}"
+        morpheus_api_url: "{{ hostvars['localhost']['morpheus_api_url_fact'] }}"
+        morpheus_tenant_name: "{{ hostvars['localhost']['morpheus_tenant_name_fact'] }}"
+        update_morpheus_cypher: "{{ hostvars['localhost']['update_morpheus_cypher_fact'] }}"
+        morpheus_cypher_ipa_domain: "{{ hostvars['localhost']['morpheus_cypher_ipa_domain_fact'] }}"
+        morpheus_cypher_ipa_server_hostname: "{{ hostvars['localhost']['morpheus_cypher_ipa_server_hostname_fact'] }}"
+        morpheus_cypher_ipa_admin_username: "{{ hostvars['localhost']['morpheus_cypher_ipa_admin_username_fact'] }}"
+        morpheus_cypher_ipa_admin_password: "{{ hostvars['localhost']['morpheus_cypher_ipa_admin_password_fact'] }}"
