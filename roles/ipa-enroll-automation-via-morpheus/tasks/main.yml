@@ -19,14 +19,14 @@
       - morpheus_cypher_ipa_admin_password is string and morpheus_cypher_ipa_admin_password is defined and morpheus_cypher_ipa_admin_password != ''
     fail_msg: "Input validation failed. See README.md for information on optional inputs and their format."
     success_msg: "User optional input configuration is valid."
-  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher is True
 
 - name: Set static Morpheus configurations
   ansible.builtin.set_fact:
     morpheus_facts:
       integration:
         name: "IPA Client Enroll Automation Via Morpheus"
-        serviceUrl: "https://github.com/ewcloud/ewc-ansiple-playbook-ipa-enroll-automation-via-morpheus.git"
+        serviceUrl: "https://github.com/slothkong/ansible-playbook-subscribe.git"
         config:
           defaultBranch: "main"
           ansiblePlaybooks: "/"
@@ -38,10 +38,10 @@
       tasks:
         - name: "Enroll IPA Client"
           ansiblePlaybook: "playbooks/morpheus/ipa-client-enroll-via-morpheus"
-          ansibleGitRef: "quality-assurance"
+          ansibleGitRef: "release/1.0.0"
         - name: "Disenroll IPA Client"
           ansiblePlaybook: "playbooks/morpheus/ipa-client-disenroll-via-morpheus"
-          ansibleGitRef: "quality-assurance"
+          ansibleGitRef: "release/1.0.0"
       workflow:
         name: "IPA Client Enroll Automation Via Morpheus"
 
@@ -81,14 +81,14 @@
     - { key: "ipa_admin_username", value: "{{ morpheus_cypher_ipa_admin_username }}" }
     - { key: "ipa_admin_password", value: "{{ morpheus_cypher_ipa_admin_password }}" }
   register: store_morpheus_cypher_result
-  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher is True
   changed_when: true
   no_log: true
 
 - name: Get IDs of Morpheus Cypher secrets
   ansible.builtin.set_fact:
     morpheus_cypher_secrets: "{{ store_morpheus_cypher_result.results | json_query('[].json.cypher.{id: id, name: itemKey}') }}"
-  when: update_morpheus_cypher == "yes" or update_morpheus_cypher == True
+  when: update_morpheus_cypher == "yes" or update_morpheus_cypher is True
 
 - name: Check for existing Morpheus Integration with GitHub repository
   ansible.builtin.uri:
@@ -431,4 +431,4 @@
       - "Morpheus Tasks: [{'name': '{{ morpheus_facts.tasks[0].name }}', 'id': '{{ morpheus_task_id_provision }}'}, {'name': '{{ morpheus_facts.tasks[1].name }}', 'id': '{{ morpheus_task_id_teardown }}'}]"
       - "Morpheus Workflow: {'name': '{{ morpheus_facts.workflow.name }}', 'id': '{{ morpheus_workflow_id }}'}"
       - "Morpheus Domain: {'name': '{{ morpheus_cypher_ipa_domain }}', 'id': '{{ morpheus_domain_id }}'}"
-      - "{{ 'Morpheus Cypher Secrets: ' + (morpheus_cypher_secrets | to_json) if (update_morpheus_cypher == 'yes' or update_morpheus_cypher == True)  else 'Morpheus Cypher Secrets: None' }}"
+      - "{{ 'Morpheus Cypher Secrets: ' + (morpheus_cypher_secrets | to_json) if (update_morpheus_cypher == 'yes' or update_morpheus_cypher is True) else 'Morpheus Cypher Secrets: None' }}"
