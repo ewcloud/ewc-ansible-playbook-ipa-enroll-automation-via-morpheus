@@ -8,7 +8,7 @@
   tasks:
     - name: EWC Ansible Role IPA Client Enroll
       ansible.builtin.include_role:
-        name: ewc-ansible-role-ipa-client-enroll-1.0
+        name: ewc-ansible-role-ipa-client-enroll-1.1
       vars:
         ipa_client_hostname: "{{ inventory_hostname }}"
         ipa_domain: "{{ lookup('cypher', 'secret=secret/ipa_domain') }}"

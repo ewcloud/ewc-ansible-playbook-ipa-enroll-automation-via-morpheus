@@ -185,7 +185,7 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 
 | Name | Version | License | Home URL |
 |------|---------|-------|------|
-| ewc-ansible-role-ipa-client-enroll | 1.0 | MIT | https://github.com/ewcloud/ewc-ansible-role-ipa-client-enroll |
+| ewc-ansible-role-ipa-client-enroll | 1.1 | MIT | https://github.com/ewcloud/ewc-ansible-role-ipa-client-enroll |
 | ewc-ansible-role-ipa-client-disenroll | 1.0 | MIT | https://github.com/ewcloud/ewc-ansible-role-ipa-client-disenroll  |
 
 ## Troubleshooting
