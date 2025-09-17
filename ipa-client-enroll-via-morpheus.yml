@@ -10,7 +10,7 @@
       ansible.builtin.include_role:
         name: ewc-ansible-role-ipa-client-enroll-1.1
       vars:
-        ipa_client_hostname: "{{ inventory_hostname }}"
+        ipa_client_hostname: "{{ inventory_hostname_short }}"
         ipa_domain: "{{ lookup('cypher', 'secret=secret/ipa_domain') }}"
         ipa_admin_username: "{{ lookup('cypher', 'secret=secret/ipa_admin_username') }}"
         ipa_admin_password: "{{ lookup('cypher', 'secret=secret/ipa_admin_password') }}"

@@ -11,7 +11,7 @@
         name: ewc-ansible-role-ipa-client-disenroll-1.0
       vars:
         ipa_domain: "{{ lookup('cypher', 'secret=secret/ipa_domain') }}"
-        ipa_client_hostname: "{{ inventory_hostname }}"
+        ipa_client_hostname: "{{ inventory_hostname_short }}"
         ipa_server_hostname: "{{ lookup('cypher', 'secret=secret/ipa_server_hostname') }}"
         ipa_admin_username: "{{ lookup('cypher', 'secret=secret/ipa_admin_username') }}"
         ipa_admin_password: "{{ lookup('cypher', 'secret=secret/ipa_admin_password') }}"
