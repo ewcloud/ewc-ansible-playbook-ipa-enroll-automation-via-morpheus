@@ -350,6 +350,8 @@
         tasks:
           - taskId: "{{ morpheus_task_id_provision }}"
             taskPhase: "provision"
+          - taskId: "{{ morpheus_task_id_teardown }}"
+            taskPhase: "teardown"
         labels:
           - "ipa-enroll-automation-via-morpheus"
           - "ewc-community-hub"
