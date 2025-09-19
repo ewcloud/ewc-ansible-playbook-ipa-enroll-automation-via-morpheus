@@ -13,8 +13,7 @@ on the other hand, is a web-based cloud orchestration tool that lets you manage
 your EWC resources via a graphical interface. It has built-in 
 [Automation](https://docs.morpheusdata.com/en/7.0.9/library/automation/automation.html)
 features you may use for arranging sets of individual Tasks and accomplishing
-some useful behavior, executed on a one-off basis or recurrently, when
-managing with cloud resources via Morpheus.
+some useful behavior, when managing with cloud resources via Morpheus.
 
 This configuration template
 (i.e. an [Ansible Playbook](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks.html))
@@ -33,8 +32,8 @@ you can deploy the [IPA Server Flavour](https://europeanweather.cloud/community-
 Community Hub Item.
 
 Once an IPA server is successfully provisioned
-and configured within your EWC environment, this template reduces the remaining 
-configuration to a one-time setup for Morpheus such that:
+and configured within your EWC environment, this template reduces the
+Morpheus configuration required to achieve the following behaviour:
 * New VMs created via the Morpheus UI, within
 a user-defined Morpheus Network Domain, will enroll onto an IPA server's
 provided DNS and LDAP services, enabling users to log into any VM with 
@@ -99,12 +98,12 @@ You can also run in non-interactive mode by passing the `--extra-vars` or `-e` f
 ansible-playbook \
   -e '{ "morpheus_api_token":"<api-token>",
         "morpheus_api_url":"https://morpheus.ecmwf.int",
-        "morpheus_tenant_name":"<memberstate>-<organization>-<projectname>",
+        "morpheus_tenant_name":"eumetsat-sandbox-ewc",
         "update_morpheus_cypher":"yes",
-        "morpheus_cypher_ipa_domain":"<memberstate>-<organization>-<projectname>.ewc",
+        "morpheus_cypher_ipa_domain":"eumetsat.sandbox.ewc",
         "morpheus_cypher_ipa_server_hostname":"ipa-server-1",
-        "morpheus_cypher_ipa_admin_username":"ipa-admin",
-        "morpheus_cypher_ipa_admin_password":"<password>"
+        "morpheus_cypher_ipa_admin_username":"ipaadmin",
+        "morpheus_cypher_ipa_admin_password":"my-secret-password"
   }' \
   ipa-enroll-automation.yml
 ```
@@ -160,11 +159,11 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 |------|-------------|------|---------|----------|
 | morpheus_api_token | access token of the Morpheus API | `string` | n/a | yes |
 | morpheus_api_url| Morpheus API URL. Example: `https://morpheus.ecmwf.int` | `string` | n/a | yes |
-| morpheus_tenant_name | Morpheus tenant name.  Example: `<memberstate>-<organization>-<projectname>` | `string` | n/a | yes |
+| morpheus_tenant_name | Morpheus tenant name.  Example: `eumetsat-sandbox-ewc` | `string` | n/a | yes |
 | update_morpheus_cypher | flag to update IPA administration data kept in Morpheus Cypher. Only `yes` will be accepted to approve | `string` | n/a | yes |
-| morpheus_cypher_ipa_domain | name of domain managed by the IPA server.  Will be ignored if `update_morpheus_cypher!=yes`. If set, should match with the value set used during configuration of an existing IPA server within the EWC environment. Example: `<memberstate>-<organization>-<projectname>.ewc` | `string` | n/a | yes |
+| morpheus_cypher_ipa_domain | name of domain managed by the IPA server.  Will be ignored if `update_morpheus_cypher!=yes`. If set, should match with the value set used during configuration of an existing IPA server within the EWC environment. Example: `eumetsat.sandbox.ewc` | `string` | n/a | yes |
 | morpheus_cypher_ipa_server_hostname | hostname of the IPA server. Will be ignored if `update_morpheus_cypher!=yes`. If set, should match the value used during configuration of an existing IPA server within the EWC environment. Example: `ipa-server-1` | `string` | n/a | no |
-| morpheus_cypher_ipa_admin_username | username of the administrator account from the IPA server. Will be ignored if `update_morpheus_cypher!=yes`. If set, should match the value used during configuration of an existing IPA server within the EWC environment. Example: `ipa-admin` | `string` | n/a | no |
+| morpheus_cypher_ipa_admin_username | username of the administrator account from the IPA server. Will be ignored if `update_morpheus_cypher!=yes`. If set, should match the value used during configuration of an existing IPA server within the EWC environment. Example: `ipaadmin` | `string` | n/a | no |
 | morpheus_cypher_ipa_admin_password | password of the administrator account from the IPA server. Will be ignored if `update_morpheus_cypher!=yes`. If set, should match the value set used during configuration of an existing IPA server within the EWC environment | `string` | n/a | no |
 
 ## Outputs
@@ -182,6 +181,9 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 | `secret/ipa_admin_password` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
 
 ## Dependencies
+> ⚠️ Only Ubuntu 22.04 and RockyLinux 8.10 VM images are currently supported.
+This is due to constrains imposed by the required
+ewc-ansible-role-ipa-client-enroll Ansible Role.
 
 | Name | Version | License | Home URL |
 |------|---------|-------|------|
