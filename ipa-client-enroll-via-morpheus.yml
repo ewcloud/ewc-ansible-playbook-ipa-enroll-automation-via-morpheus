@@ -1,0 +1,17 @@
+---
+- name: Install IPA client and enroll into an IPA server's LDAP/DNS services via Morpheus
+  hosts: all
+  become: true
+  become_user: root
+  become_method: ansible.builtin.sudo
+
+  tasks:
+    - name: EWC Ansible Role IPA Client Enroll
+      ansible.builtin.include_role:
+        name: ewc-ansible-role-ipa-client-enroll-1.1
+      vars:
+        ipa_client_hostname: "{{ inventory_hostname_short }}"
+        ipa_domain: "{{ lookup('cypher', 'secret=secret/ipa_domain') }}"
+        ipa_admin_username: "{{ lookup('cypher', 'secret=secret/ipa_admin_username') }}"
+        ipa_admin_password: "{{ lookup('cypher', 'secret=secret/ipa_admin_password') }}"
+        ipa_server_hostname: "{{ lookup('cypher', 'secret=secret/ipa_server_hostname') }}"
