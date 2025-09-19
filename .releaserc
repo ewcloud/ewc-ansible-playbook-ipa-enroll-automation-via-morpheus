@@ -23,6 +23,12 @@
             }
         ],
         [
+            "@semantic-release/exec",
+            {
+                "successCmd": "echo 'VERSION=${nextRelease.version}' >> $GITHUB_ENV"
+            }
+        ],
+        [
             "@semantic-release/git",
             {
                 "assets": ["CHANGELOG.md"],
