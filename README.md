@@ -33,11 +33,18 @@ Community Hub Item.
 
 Once an IPA server is successfully provisioned
 and configured within your EWC environment, this template reduces the
-Morpheus configuration required to achieve the following behaviour:
+Morpheus configuration required to achieve the following behavior:
 * New VMs created via the Morpheus UI, within
 a user-defined Morpheus Network Domain, will enroll onto an IPA server's
 provided DNS and LDAP services, enabling users to log into any VM with 
 the same username and password.
+
+![Automatic VM Enroll](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/outcome_part1.webp)
+
+* Users may access any newly enrolled VMs with their existing LDAP credentials.
+
+![Access via LDAP Credentials](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/outcome_part2.webp)
+
 * Enrolled VMs will disenroll from the IPA server upon
 their deletion via Morpheus UI, to ensure a clean and healthy internal DNS
 table.
@@ -79,6 +86,8 @@ To successfully run this playbook, the following packages should be available in
 
 ### 1. Configure and apply the template
 
+![Template Edition and Running](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/item_run_part1.webp)
+
 #### 1.1. Interactive Mode
 
 By running the following command, you can trigger an interactive session that
@@ -116,6 +125,8 @@ As a workaround, manual action over the Morpheus UI is required.
 
 > ⛔ This step must be performed every time you update the template input values and
 apply them.
+
+![Morpheus Domain and Workflow linking](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/item_run_part2.webp)
 
 Finalize the configuration over the Morpheus UI:
 
