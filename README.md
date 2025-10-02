@@ -33,11 +33,18 @@ Community Hub Item.
 
 Once an IPA server is successfully provisioned
 and configured within your EWC environment, this template reduces the
-Morpheus configuration required to achieve the following behaviour:
+Morpheus configuration required to achieve the following behavior:
 * New VMs created via the Morpheus UI, within
 a user-defined Morpheus Network Domain, will enroll onto an IPA server's
 provided DNS and LDAP services, enabling users to log into any VM with 
 the same username and password.
+
+![Automatic VM Enroll](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/outcome_part1.webp)
+
+* Users may access any newly enrolled VMs with their existing LDAP credentials.
+
+![Access via LDAP Credentials](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/outcome_part2.webp)
+
 * Enrolled VMs will disenroll from the IPA server upon
 their deletion via Morpheus UI, to ensure a clean and healthy internal DNS
 table.
@@ -79,6 +86,8 @@ To successfully run this playbook, the following packages should be available in
 
 ### 1. Configure and apply the template
 
+![Template Edition and Running](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/item_run_part1.webp)
+
 #### 1.1. Interactive Mode
 
 By running the following command, you can trigger an interactive session that
@@ -117,6 +126,8 @@ As a workaround, manual action over the Morpheus UI is required.
 > ⛔ This step must be performed every time you update the template input values and
 apply them.
 
+![Morpheus Domain and Workflow linking](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/item_run_part2.webp)
+
 Finalize the configuration over the Morpheus UI:
 
 1. Login to the Morpheus UI of your EWC environment
@@ -132,6 +143,8 @@ bottom of the form to finalize the setup.
 
 ### 3. (Optional) Further integrate your IPA Server with Morpheus Monitoring
 
+![Morpheus Agent Installation](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/openstack_cli_intro_webminar.jpg)
+
 VMs provisioned via Morpheus UI, such as the ones you may have created 
 before applying this template or those you'll create afterwards (which
 will automatically become part of your IPA-managed fleet), are equipped with a 
@@ -143,11 +156,7 @@ If you are fond of such Morpheus monitoring functionality, note
 that you can turn instances provisioned via Community Hub Item templating
 (i.e. [IPA Server Provisioning](https://europeanweather.cloud/community-hub/ipa-server-provisioning)), 
 or alternative deployment methods, into Morpheus-monitored VMs. See [minutes
-40:22 ~ 44:10](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422) of the 
-**European Weather Cloud (EWC): Introduction to OpenStack API** webminar to 
-learn more:
-
-[![FLipkart](./docs/images/openstack_cli_intro_webminar.jpg)](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422)
+40:22-44:10 of this EWC webminar](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422) to learn more:
 
 ## Inputs
 >⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
