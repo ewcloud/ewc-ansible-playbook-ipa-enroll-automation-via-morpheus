@@ -132,6 +132,8 @@ bottom of the form to finalize the setup.
 
 ### 3. (Optional) Further integrate your IPA Server with Morpheus Monitoring
 
+![Morpheus Agent Installation](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/openstack_cli_intro_webminar.jpg)
+
 VMs provisioned via Morpheus UI, such as the ones you may have created 
 before applying this template or those you'll create afterwards (which
 will automatically become part of your IPA-managed fleet), are equipped with a 
@@ -143,11 +145,7 @@ If you are fond of such Morpheus monitoring functionality, note
 that you can turn instances provisioned via Community Hub Item templating
 (i.e. [IPA Server Provisioning](https://europeanweather.cloud/community-hub/ipa-server-provisioning)), 
 or alternative deployment methods, into Morpheus-monitored VMs. See [minutes
-40:22 ~ 44:10](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422) of the 
-**European Weather Cloud (EWC): Introduction to OpenStack API** webminar to 
-learn more:
-
-[![FLipkart](./docs/images/openstack_cli_intro_webminar.jpg)](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422)
+40:22-44:10 of this EWC webminar](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422) to learn more:
 
 ## Inputs
 >⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
