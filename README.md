@@ -71,16 +71,15 @@ to check out the [Morpheus documentation](https://docs.morpheusdata.com/en/7.0.9
 for steps on how to generate one on a self-service manner.
 
 ## Prerequisites
->💡 Versions listed correspond to minimal prerequisites.
 
 To successfully run this playbook, the following packages should be available in your work environment:
 
 | Name | Version | License | Home URL |
 |------|---------|----- |-----|
-| git | 2.0 | GPLv2  | https://git-scm.com/downloads |
-| python | 3.9   | PSF | https://www.python.org/downloads  |
-| ansible | 2.15 |  GPLv3+ | https://pypi.org/project/ansible  |
-| jmespath| 1.0 | MIT | https://pypi.org/project/jmespath  |
+| git | >= 2.0 | GPLv2  | https://git-scm.com/downloads |
+| python | >= 3.9   | PSF | https://www.python.org/downloads  |
+| ansible | >= 2.15 |  GPLv3+ | https://pypi.org/project/ansible  |
+| jmespath| >= 1.0 | MIT | https://pypi.org/project/jmespath  |
 
 ## Usage
 
@@ -118,7 +117,7 @@ ansible-playbook \
 ```
 
 ### 2. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
-> ⚠️ As of 17.07.2025, technical limitations on the side of the
+>⚠️ As of 17.07.2025, technical limitations on the side of the
 [Morpheus API](https://apidocs.morpheusdata.com/v7.0.9/reference/createnetworkdomain)
 lead to unreliable configuration of links between workflows and domains.
 As a workaround, manual action over the Morpheus UI is required.
@@ -152,11 +151,11 @@ will automatically become part of your IPA-managed fleet), are equipped with a
 a daemon that provide statistics for the guest operating system and resource utilization, 
 to enable monitoring and log aggregations.
 
-If you are fond of such Morpheus monitoring functionality, note
-that you can turn instances provisioned via Community Hub Item templating
-(i.e. [IPA Server Provisioning](https://europeanweather.cloud/community-hub/ipa-server-provisioning)), 
-or alternative deployment methods, into Morpheus-monitored VMs. See [minutes
-40:22-44:10 of this EWC webminar](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422) to learn more:
+If you are fond of such Morpheus monitoring functionality,
+watch [minutes
+40:22-44:10 of this EWC webminar](https://youtu.be/MO3pYzSDQSM?feature=shared&t=2422)
+to learn about how you can turn instances provisioned via Community Hub Item templating,
+or alternative deployment methods, into Morpheus-monitored VMs. 
 
 ## Inputs
 >⚠️ If set, the `update_morpheus_cypher` flag will trigger the creation/edition of secrets within Morpheus Cypher.
