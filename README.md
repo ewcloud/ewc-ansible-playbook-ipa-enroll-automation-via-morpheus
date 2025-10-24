@@ -49,45 +49,40 @@ the same username and password.
 their deletion via Morpheus UI, to ensure a clean and healthy internal DNS
 table.
 
-
-## Copyright and License
-Copyright © EUMETSAT 2025.
-
-The provided code and instructions are licensed under the [MIT license](./LICENSE).
-They are intended to automate the setup of an environment that includes 
-third-party software components.
-The usage and distribution terms of the resulting environment are 
-subject to the individual licenses of those third-party libraries.
-
-Users are responsible for reviewing and complying with the licenses of
-all third-party components included in the environment.
-
-Contact [EUMETSAT](http://www.eumetsat.int) for details on the usage and distribution terms.
-
-## Authentication
-
-Before proceeding, if you lack a Morpheus API access token, make sure
-to check out the [Morpheus documentation](https://docs.morpheusdata.com/en/7.0.9/administration/user_settings/user_settings.html#api-access)
-for steps on how to generate one on a self-service manner.
-
 ## Prerequisites
 
-To successfully run this playbook, the following packages should be available in your work environment:
-
-| Name | Version | License | Home URL |
-|------|---------|----- |-----|
-| git | >= 2.0 | GPLv2  | https://git-scm.com/downloads |
-| python | >= 3.9   | PSF | https://www.python.org/downloads  |
-| ansible | >= 2.15 |  GPLv3+ | https://pypi.org/project/ansible  |
-| jmespath| >= 1.0 | MIT | https://pypi.org/project/jmespath  |
+* Install [git](https://git-scm.com/downloads) (version 2.0 or higher )
+* Install [python](https://www.python.org/downloads) (version 3.9 or higher) 
+* Install [ansible](https://pypi.org/project/ansible) (version 2.15 or higher)
+* Install [jmespath](https://pypi.org/project/jmespath) (version 1.0 or higher)
+* Get an Morpheus API credentials (see [API access](https://docs.morpheusdata.com/en/7.0.9/administration/user_settings/user_settings.html#api-access) section in the official Morpheus documentation) 
 
 ## Usage
 
-### 1. Configure and apply the template
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus.git
+```
+
+#### 1.1. Change to the specific Item's subdirectory
+
+```bash
+cd ewc-ansible-playbook-ipa-enroll-automation-via-morpheus
+```
+
+#### 1.2. (Optional) Checkout an specific Item's version
+>⚠️ Make sure to replace `x.y.z` in the command below, with your version of preference.
+
+```bash
+git checkout x.y.z
+```
+
+### 2. Configure and apply the template
 
 ![Template Edition and Running](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/item_run_part1.webp)
 
-#### 1.1. Interactive Mode
+#### 2.1. Interactive Mode
 
 By running the following command, you can trigger an interactive session that
 prompts you for the necessary user inputs, and then applies changes to your
@@ -96,7 +91,7 @@ target EWC environment:
 ansible-playbook ipa-enroll-automation.yml
 ```
 
-#### 1.2. Non-Interactive Mode
+#### 2.2. Non-Interactive Mode
 
 >💡 To learn more about defining variables at runtime, checkout the
 [official Ansible documentation](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html).
@@ -116,7 +111,7 @@ ansible-playbook \
   ipa-enroll-automation.yml
 ```
 
-### 2. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
+### 3. Manually link the Morpheus Workflow to the user-defined Morpheus Domain
 >⚠️ As of 17.07.2025, technical limitations on the side of the
 [Morpheus API](https://apidocs.morpheusdata.com/v7.0.9/reference/createnetworkdomain)
 lead to unreliable configuration of links between workflows and domains.
@@ -140,7 +135,7 @@ menu and select `IPA Client Enroll Automation Via Morpheus`.
 6. Click on `SAVE CHANGES` at the
 bottom of the form to finalize the setup.
 
-### 3. (Optional) Further integrate your IPA Server with Morpheus Monitoring
+### 4. (Optional) Further integrate your IPA Server with Morpheus Monitoring
 
 ![Morpheus Agent Installation](https://raw.githubusercontent.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/refs/heads/main/docs/images/openstack_cli_intro_webminar.jpg)
 
@@ -219,3 +214,17 @@ or submit changes.
 
 [European Weather Cloud](http://support.europeanweather.cloud/)
 <[support@europeanweather.cloud](mailto:support@europeanweather.cloud)>
+
+## Copyright and License
+Copyright © EUMETSAT 2025.
+
+The provided code and instructions are licensed under the [MIT license](./LICENSE).
+They are intended to automate the setup of an environment that includes 
+third-party software components.
+The usage and distribution terms of the resulting environment are 
+subject to the individual licenses of those third-party libraries.
+
+Users are responsible for reviewing and complying with the licenses of
+all third-party components included in the environment.
+
+Contact [EUMETSAT](http://www.eumetsat.int) for details on the usage and distribution terms.
