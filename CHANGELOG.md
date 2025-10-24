@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.1](https://github.com/ewcloud/ewc-flavours/compare/1.0.0...1.0.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* Item metadata rendering ([5bb07e2](https://github.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/commit/5bb07e267ea9672f130e949e43efe405f32be500))
+
 # 1.0.0 (2025-09-19)
 
 
