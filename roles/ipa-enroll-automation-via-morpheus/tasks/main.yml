@@ -38,10 +38,10 @@
       tasks:
         - name: "Enroll IPA Client"
           ansiblePlaybook: "ipa-client-enroll-via-morpheus"
-          ansibleGitRef: "release/1.0.1"
+          ansibleGitRef: "release/1.1.0"
         - name: "Disenroll IPA Client"
           ansiblePlaybook: "ipa-client-disenroll-via-morpheus"
-          ansibleGitRef: "release/1.0.1"
+          ansibleGitRef: "release/1.1.0"
       workflow:
         name: "IPA Client Enroll Automation Via Morpheus"
 

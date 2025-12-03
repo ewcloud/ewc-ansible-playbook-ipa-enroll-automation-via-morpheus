@@ -184,14 +184,18 @@ To avoid unexpected behavior during IPA clients enrollment, ensure the values of
 | `secret/ipa_admin_password` | Morpheus Cypher Secret | Read during enrollment/disenrollment Ansible Playbooks execution |
 
 ## Dependencies
-> ⚠️ Only Ubuntu 22.04 and RockyLinux 8.10 VM images are currently supported.
-This is due to constrains imposed by the required
-ewc-ansible-role-ipa-client-enroll Ansible Role.
 
-| Name | Version | License | Home URL |
-|------|---------|-------|------|
-| ewc-ansible-role-ipa-client-enroll | 1.1 | MIT | https://github.com/ewcloud/ewc-ansible-role-ipa-client-enroll |
-| ewc-ansible-role-ipa-client-disenroll | 1.0 | MIT | https://github.com/ewcloud/ewc-ansible-role-ipa-client-disenroll  |
+| Name | Home URL |
+|------|---------|
+| ewc-ansible-role-ipa-client-enroll | https://github.com/ewcloud/ewc-ansible-role-ipa-client-enroll |
+| ewc-ansible-role-ipa-client-disenroll | https://github.com/ewcloud/ewc-ansible-role-ipa-client-disenroll  |
+
+
+## Operation
+Checkout the following how-to guides to learn about managing resources after initial setup:
+* [How to Manage the IPA Server Credentials Within Morpheus](./docs/how-to/how-to-manage-ipa-server-credentials-within-morpheus.md)
+* [How to Manage the the IPA Server](./docs/how-to/how-to-manage-the-ipa-server.md)
+
 
 ## Troubleshooting
 Checkout the [troubleshooting documentation](./docs/troubleshooting.md) for
