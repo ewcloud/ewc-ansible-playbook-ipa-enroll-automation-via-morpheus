@@ -3,6 +3,13 @@
 All notable changes to this project are documented in this file. See
 [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/compare/1.0.1...1.1.0) (2025-12-03)
+
+
+### Features
+
+* Test automation support ([#3](https://github.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/issues/3)) ([03191c2](https://github.com/ewcloud/ewc-ansible-playbook-ipa-enroll-automation-via-morpheus/commit/03191c22fcd2ff9476ae3ed3f3fc1c7b3c4be037))
+
 # [1.0.1](https://github.com/ewcloud/ewc-flavours/compare/1.0.0...1.0.1) (2025-10-02)
 
 
